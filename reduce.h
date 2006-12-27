@@ -1,5 +1,5 @@
 /*
- *	reduce.c
+ *	reduce.h
  *
  * 	Copyright 2006 Johan de Jong
  *

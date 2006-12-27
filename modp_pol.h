@@ -1,5 +1,5 @@
 /*
- *	modp_pol.c
+ *	modp_pol.h
  *
  * 	Copyright 2006 Johan de Jong
  *

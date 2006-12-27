@@ -1,5 +1,5 @@
 /*
- *	scalar.h
+ *	modp_scalar.h
  *
  * 	Copyright 2006 Johan de Jong
  *
