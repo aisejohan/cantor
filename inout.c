@@ -58,6 +58,15 @@ void read_in(polynomial f)
 	free_scalar(c);
 }
 
+/* Error message on writing. */
+void error_msg(int uit)
+{
+	if(uit < 0) {
+		perror("Not writing correctly to file! uit = %d.");
+		exit(1);
+	}
+}
+
 /* For use in pari... */
 void put_out(polynomial f)
 {
@@ -71,18 +80,21 @@ void put_out(polynomial f)
 		exit(1);
 	}
 
-	fprintf(fd, "g = \\\n");
+	uit = fprintf(fd, "g = \\\n");
+	error_msg(uit);
 
 	i = 0;
-	uit = mpz_out_str(fd, 10, f->coeffs[i]);
-	fprintf(fd, " + \\\n");
-	while (uit && i <= f->degree) {
+	while (i <= f->degree) {
+		uit = fprintf(fd, "Mod(");
+		error_msg(uit);
 		uit = mpz_out_str(fd, 10, f->coeffs[i]);
-		fprintf(fd, "*x^%d + \\\n", i);
+		error_msg(uit);
+		uit = fprintf(fd, ", %d^%d)*x^%d + \\\n", p, r, i);
+		error_msg(uit);
 		i++;
 	}
-	fprintf(fd,"0;\n");
+	uit = fprintf(fd,"0;\n");
+	error_msg(uit);
 
 	fclose(fd);
 }
-

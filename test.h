@@ -1,5 +1,5 @@
 /*
- *	fl.c
+ *	test.c
  *
  * 	Copyright 2006 Johan de Jong
  *
@@ -21,46 +21,13 @@
  *
  *									*/
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-
-#include "data.h"
-#include "scalar.h"
-#include "modp_scalar.h"
-#include "pol.h"
-#include "utils.h"
-#include "reduce.h"
-#include "modp_pol.h"
-#include "frob.h"
-#include "inout.h"
-#include "test.h"
-
-int main()
-{
-	polynomial f,g;
-
-	setup_scalars();
-	setup_modp_scalars();
-
-	printf("/* The prime is: %d. */\n",p);
-	printf("/* The power is: %d. */\n",r);
-
-	test_frob_lift();
-	exit(0);
-
-	make_pol(f);
-	make_pol(g);
-
-	read_in(f);
-	print_pol(f);
-	frob_lift(f, g);
-	print_pol(g);
-	printf("\n");
-	put_out(g);
-
-	free_pol(g);
-	free_pol(f);
-
-	exit(0);
-}
+void test_scalars();
+void test_deriv();
+void test_exponents();
+void test_distributive_law();
+void test_associative_law();
+void test_reduction();
+void test_inverses();
+void test_substitution();
+void test_frob_lift();
+void test_substitute_speed();

@@ -35,16 +35,9 @@
 #include "frob.h"
 #include "inout.h"
 
-int do_tests()
+void test_scalars()
 {
-	int i,uit;
-	struct exponents e;
 	mscalar ma,mb,mc,md,me;
-	polynomial A,B,C,D;
-
-	setup_scalars();
-	setup_modp_scalars();
-
 
 	printf("/* The prime is: %d. */\n",p);
 	printf("/* The power is: %d. */\n",r);
@@ -75,17 +68,24 @@ int do_tests()
 	printf("The number 1 is: ");
 	printmscalar(me);
 	printf(".\n");
-
-
 	printf("\n");
 
+	free_scalar(ma);
+	free_scalar(mb);
+	free_scalar(mc);
+	free_scalar(md);
+	free_scalar(me);
+}
+
+/* Test Leibniz rule for derivative. */
+void test_deriv()
+{
+	polynomial A,B,C,D;
 	make_pol(A);
 	make_pol(B);
 	make_pol(C);
 	make_pol(D);
 
-
-/* Test Leibniz rule for derivative. */
 	random_pol(A,10);
 	random_pol(B,200);
 	pol_mult(A,B,C);
@@ -102,7 +102,24 @@ int do_tests()
 	print_pol(D);
 	printf("\n");
 
+	free_pol(A);
+	free_pol(B);
+	free_pol(C);
+	free_pol(D);
+}
+
 /* Test exponents and multiplication. */
+void test_exponents()
+{
+	int i;
+	struct exponents e;
+	polynomial A,B,C,D;
+
+	make_pol(A);
+	make_pol(B);
+	make_pol(C);
+	make_pol(D);
+	
 	random_pol(B,8);
 	for(i = 1; i <= 3; i++) {
 		print_pol(B);
@@ -115,7 +132,22 @@ int do_tests()
 	}
 	printf("\n");
 
+	free_pol(A);
+	free_pol(B);
+	free_pol(C);
+	free_pol(D);
+}
+
 /* Test distributive law. */
+void test_distributive_law()
+{
+	polynomial A,B,C,D;
+
+	make_pol(A);
+	make_pol(B);
+	make_pol(C);
+	make_pol(D);
+
 	random_pol(A,400);
 	random_pol(B,600);
 	random_pol(C,140);
@@ -131,7 +163,22 @@ int do_tests()
 	print_pol(D);
 	printf("\n");
 
+	free_pol(A);
+	free_pol(B);
+	free_pol(C);
+	free_pol(D);
+}
+
 /* Test associative law. */
+void test_associative_law()
+{
+	polynomial A,B,C,D;
+
+	make_pol(A);
+	make_pol(B);
+	make_pol(C);
+	make_pol(D);
+
 	random_pol(A,400);
 	random_pol(B,600);
 	random_pol(C,140);
@@ -146,8 +193,22 @@ int do_tests()
 	print_pol(D);
 	printf("\n");
 
+	free_pol(A);
+	free_pol(B);
+	free_pol(C);
+	free_pol(D);
+}
 
 /* Test reduce_by_g_q. */
+void test_reduction()
+{
+	polynomial A,B,C,D;
+
+	make_pol(A);
+	make_pol(B);
+	make_pol(C);
+	make_pol(D);
+
 	random_pol(A,400);
 	random_pol(B,500);
 	copy_pol(B,D);
@@ -160,7 +221,22 @@ int do_tests()
 	print_pol(D);
 	printf("\n");
 
+	free_pol(A);
+	free_pol(B);
+	free_pol(C);
+	free_pol(D);
+}
+
 /* Test inverses. */
+void test_inverses()
+{
+	polynomial A,B,C,D;
+
+	make_pol(A);
+	make_pol(B);
+	make_pol(C);
+	make_pol(D);
+
 	random_pol(B,17);
 	times_int(p,B,B);
 	random_pol(A,0);
@@ -173,7 +249,23 @@ int do_tests()
 	print_pol(D);
 	printf("\n");
 
+	free_pol(A);
+	free_pol(B);
+	free_pol(C);
+	free_pol(D);
+}
+
 /* Test substitution and derivatives. */
+void test_substitution()
+{
+	int i,uit;
+	polynomial A,B,C,D;
+
+	make_pol(A);
+	make_pol(B);
+	make_pol(C);
+	make_pol(D);
+
 	random_pol(A, 20);
 	random_pol(B, 20);
 	substitute(A, B, D);
@@ -207,15 +299,46 @@ int do_tests()
 	}
 	printf("\n");
 
+	free_pol(A);
+	free_pol(B);
+	free_pol(C);
+	free_pol(D);
+}
+
 /* Test frob_lift. */
-	read_in(A);
+void test_frob_lift()
+{
+	polynomial A,B,C,D;
+
+	make_pol(A);
+	make_pol(B);
+	make_pol(C);
+	make_pol(D);
+
+	random_pol(A,3);
 	print_pol(A);
+
 	frob_lift(A, B);
 	print_pol(B);
-	printf("\n");
 	put_out(B);
+	printf("\n");
+
+	free_pol(A);
+	free_pol(B);
+	free_pol(C);
+	free_pol(D);
+}
 
 /* Test substitution speeds... */
+void test_substitute_speed()
+{
+	polynomial A,B,C,D;
+
+	make_pol(A);
+	make_pol(B);
+	make_pol(C);
+	make_pol(D);
+
 	random_pol(A, 251);
 	random_pol(B, 36);
 	substitute(B, A, C);
@@ -230,5 +353,4 @@ int do_tests()
 	free_pol(B);
 	free_pol(C);
 	free_pol(D);
-	exit(0);
 }
