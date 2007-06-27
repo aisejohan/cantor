@@ -11,5 +11,5 @@ debug:
 	gcc -lgmp -g -Wall -o tester *.o
 
 profiler:
-	gcc -g -pg -DPROFILER -Wall -c *.c
-	gcc -g -pg -Wall -lgmp -o tester *.o
+	gcc -pg -DPROFILER -Wall -O2 -march=nocona -c *.c
+	gcc -pg -Wall -lgmp -O2 -march=nocona -o tester *.o

@@ -1,5 +1,5 @@
 /*
- *	test.c
+ *	test.h
  *
  * 	Copyright 2006 Johan de Jong
  *

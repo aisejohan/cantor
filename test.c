@@ -315,7 +315,7 @@ void test_frob_lift()
 	make_pol(C);
 	make_pol(D);
 
-	random_pol(A,3);
+	random_pol(A,20);
 	print_pol(A);
 
 	frob_lift(A, B);

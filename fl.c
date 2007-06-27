@@ -46,8 +46,10 @@ int main()
 	printf("/* The prime is: %d. */\n",p);
 	printf("/* The power is: %d. */\n",r);
 
+/*
 	test_frob_lift();
 	exit(0);
+*/
 
 	make_pol(f);
 	make_pol(g);

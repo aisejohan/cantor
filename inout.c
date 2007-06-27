@@ -38,9 +38,9 @@ void read_in(polynomial f)
 
 	make_scalar(c);
 
-	fd = fopen("input", "r");
+	fd = fopen("tmp/input", "r");
 	if (!fd) {
-		perror("Not opening file <input>. Does it exist?");
+		perror("read_in: Not opening file <tmp/input>");
 		exit(1);
 	}
 
@@ -62,7 +62,8 @@ void read_in(polynomial f)
 void error_msg(int uit)
 {
 	if(uit < 0) {
-		perror("Not writing correctly to file! uit = %d.");
+		perror("error_msg: Not writing correctly to file!\n");
+		printf("Here uit=%d.\n",uit);
 		exit(1);
 	}
 }
@@ -74,9 +75,9 @@ void put_out(polynomial f)
 	int uit;
 	FILE *fd;
 
-	fd = fopen("output", "w");
+	fd = fopen("tmp/output", "w");
 	if (!fd) {
-		perror("Not opening file <output>!?");
+		perror("Not opening file <tmp/output>!?\n");
 		exit(1);
 	}
 
