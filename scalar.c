@@ -26,7 +26,7 @@
 #include "data.h"
 #include "scalar.h"
 
-static scalar *invs;
+static scalar *invs=NULL;
 
 void change_prime(int p)
 {
@@ -36,7 +36,7 @@ void change_prime(int p)
 		printf("Primes are positive. Stop.\n");
 		exit(1);
 	}
-	if (prime) free(invs);
+	if (invs) free(invs);
 
 	invs = (scalar *)malloc(p*sizeof(scalar));
 	prime = p;

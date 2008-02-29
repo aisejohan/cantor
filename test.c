@@ -27,20 +27,12 @@
 
 #include "data.h"
 #include "scalar.h"
-#include "modp_scalar.h"
 #include "pol.h"
-#include "utils.h"
-#include "reduce.h"
-#include "modp_pol.h"
-#include "frob.h"
-#include "inout.h"
 
-void test_scalars()
+void test_scalars(void )
 {
-	int p;
 	scalar ma,mb,mc,md,me;
 
-	p = 7;
 	change_prime(7);
 
 	printf("/* The prime is: %d. */\n",prime);
@@ -63,13 +55,48 @@ void test_scalars()
 	printf(".\n");
 	me = mc * md % prime;
 	printf("The number 1 is: ");
-	printmscalar(me);
+	print_scalar(me);
 	printf(".\n");
 	printf("\n");
 
 }
 
-/* Test Leibniz rule for derivative. */
+void test_distributive_law(void )
+{
+	polynomial A,B,C,D;
+
+	make_pol(&A);
+	make_pol(&B);
+	make_pol(&C);
+	make_pol(&D);
+printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
+
+	random_pol(A,10);
+	print_pol(A);
+	random_pol(B,10);
+	print_pol(B);
+	random_pol(C,10);
+	pol_add(D,A,B);
+	print_pol(D);
+	pol_mult(D,C,D);
+	pol_mult(B,B,C);
+	pol_mult(A,A,C);
+	pol_add(C,A,B);
+	times_int(C,-1,C);
+	pol_add(D,C,D);
+
+	printf("The following should be zero:\n");
+	print_pol(D);
+	printf("\n");
+
+	free_pol(&A);
+	free_pol(&B);
+	free_pol(&C);
+	free_pol(&D);
+}
+
+
+/*
 void test_deriv()
 {
 	polynomial A,B,C,D;
@@ -100,7 +127,6 @@ void test_deriv()
 	free_pol(D);
 }
 
-/* Test exponents and multiplication. */
 void test_exponents()
 {
 	int i;
@@ -130,38 +156,7 @@ void test_exponents()
 	free_pol(D);
 }
 
-/* Test distributive law. */
-void test_distributive_law()
-{
-	polynomial A,B,C,D;
 
-	make_pol(A);
-	make_pol(B);
-	make_pol(C);
-	make_pol(D);
-
-	random_pol(A,400);
-	random_pol(B,600);
-	random_pol(C,140);
-	pol_add(A,B,D);
-	pol_mult(C,D,D);
-	pol_mult(C,B,B);
-	pol_mult(A,C,A);
-	pol_add(A,B,C);
-	times_int(-1,C,C);
-	pol_add(D,C,D);
-
-	printf("The following should be zero:\n");
-	print_pol(D);
-	printf("\n");
-
-	free_pol(A);
-	free_pol(B);
-	free_pol(C);
-	free_pol(D);
-}
-
-/* Test associative law. */
 void test_associative_law()
 {
 	polynomial A,B,C,D;
@@ -191,7 +186,6 @@ void test_associative_law()
 	free_pol(D);
 }
 
-/* Test reduce_by_g_q. */
 void test_reduction()
 {
 	polynomial A,B,C,D;
@@ -219,7 +213,6 @@ void test_reduction()
 	free_pol(D);
 }
 
-/* Test inverses. */
 void test_inverses()
 {
 	polynomial A,B,C,D;
@@ -247,7 +240,6 @@ void test_inverses()
 	free_pol(D);
 }
 
-/* Test substitution and derivatives. */
 void test_substitution()
 {
 	int i,uit;
@@ -297,7 +289,6 @@ void test_substitution()
 	free_pol(D);
 }
 
-/* Test frob_lift. */
 void test_frob_lift()
 {
 	polynomial A,B,C,D;
@@ -321,7 +312,6 @@ void test_frob_lift()
 	free_pol(D);
 }
 
-/* Test substitution speeds... */
 void test_substitute_speed()
 {
 	polynomial A,B,C,D;
@@ -345,4 +335,12 @@ void test_substitute_speed()
 	free_pol(B);
 	free_pol(C);
 	free_pol(D);
+}
+*/
+
+int main(void )
+{
+	test_scalars();
+	test_distributive_law();
+	return(0);
 }

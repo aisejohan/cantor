@@ -27,20 +27,22 @@
 #include "data.h"
 #include "scalar.h"
 
-void make_pol(polynomial f)
+void make_pol(polynomial *f)
 {
-	f->degree = 0;
-	f->length = min_length;
-	f->coeffs = (scalar *) malloc((f->length+1)*sizeof(scalar));
-	if (!f->coeffs) {
+	*f = (polynomial) malloc(sizeof(struct pol));
+	(*f)->degree = 0;
+	(*f)->length = min_length;
+	(*f)->coeffs = (scalar *) malloc(((*f)->length+1)*sizeof(scalar));
+	if (!(*f)->coeffs) {
 		perror("Malloc failed in make_pol!");
 		exit(1);
 	}
 }
 
-void free_pol(polynomial f)
+void free_pol(polynomial *f)
 {
-	free(f->coeffs);
+	free((*f)->coeffs);
+	free(*f);
 }
 
 /* This resizes the storage space of the polynomial, but
@@ -143,17 +145,17 @@ void pol_add(polynomial h, polynomial g, polynomial f)
 		}
 	} else {
 		i = f->degree;
-		while ((c = ((f->coeffs[i] + g->coeffs[i]) % prime) == 0)
+		do {
+			c =  f->coeffs[i] + g->coeffs[i] % prime;
 			&& (i > 0)) i--;
 		/* Note that with this convention the zero polynomial
 		 * has degree 0.*/
-		h -> degree = i;
+		h->degree = i;
 		resize_pol(h, i);
 		h->coeffs[i] = c;
-		i--;
 	}
 	while (i >= 0) {
-		h->coeffs[i] = (g->coeffs[i] + h->coeffs[i]) % prime;
+		h->coeffs[i] = (g->coeffs[i] + f->coeffs[i]) % prime;
 		i--;
 	}
 }

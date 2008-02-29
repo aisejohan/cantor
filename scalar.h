@@ -21,7 +21,7 @@
  *
  *									*/
 
-int prime = 0;
+int prime;
 void change_prime(int p);
 void print_scalar(scalar a);
 scalar sc_inv(scalar i);
