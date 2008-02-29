@@ -21,13 +21,11 @@
  *
  *									*/
 void make_pol(polynomial f);
-void free_pol(polynomial f);
+void resize_pol(polynomial f, unsigned int new_length);
 void copy_pol(polynomial f, polynomial g);
-void negate_pol(polynomial f, polynomial g);
 void print_pol(polynomial f);
 void random_pol(polynomial f, unsigned int d);
 void pol_add(polynomial f, polynomial g, polynomial h);
 void times_int(int mult, polynomial f, polynomial g);
 void times_scalar(mscalar a, polynomial f, polynomial g);
 void pol_mult(polynomial f, polynomial g, polynomial h);
-void resize_pol(polynomial f, unsigned int new_length);

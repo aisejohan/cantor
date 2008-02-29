@@ -37,44 +37,36 @@
 
 void test_scalars()
 {
-	mscalar ma,mb,mc,md,me;
+	int p;
+	scalar ma,mb,mc,md,me;
 
-	printf("/* The prime is: %d. */\n",p);
-	printf("/* The power is: %d. */\n",r);
+	p = 7;
+	change_prime(7);
 
-	make_scalar(ma);
-	make_scalar(mb);
-	make_scalar(mc);
-	make_scalar(md);
-	make_scalar(me);
+	printf("/* The prime is: %d. */\n",prime);
 
-	sc_zero(ma);
+	ma = 0;
 	printf("The number 0 is: ");
-	printmscalar(ma);
+	print_scalar(ma);
 	printf(".\n");
-	sc_one(mb);
+	mb = 1;
 	printf("The number 1 is: ");
-	printmscalar(mb);
+	print_scalar(mb);
 	printf(".\n");
-	ito_sc(541,mc);
+	mc = 541;
 	printf("The number 541 is: ");
-	printmscalar(mc);
+	print_scalar(mc);
 	printf(".\n");
-	sc_inv(mc,md);
+	md = sc_inv(mc);
 	printf("The inverse of 541 is: ");
-	printmscalar(md);
+	print_scalar(md);
 	printf(".\n");
-	sc_mult(md,mc,me);
+	me = mc * md % prime;
 	printf("The number 1 is: ");
 	printmscalar(me);
 	printf(".\n");
 	printf("\n");
 
-	free_scalar(ma);
-	free_scalar(mb);
-	free_scalar(mc);
-	free_scalar(md);
-	free_scalar(me);
 }
 
 /* Test Leibniz rule for derivative. */

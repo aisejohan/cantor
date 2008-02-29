@@ -21,26 +21,18 @@
  *
  *									*/
 
-
 /* #define KIJKEN */
-
-#define KLEINER	1
-#define GELIJK	-1
-#define GROTER	0
-
-#define p	11
-#define r	100		/* Exponent. */
 
 #define min_length	200
 
-/* This type will be used for our scalars. */
-#include <gmp.h>
-typedef mpz_t mscalar;
 
-typedef struct {
+/* This type will be used for our scalars. */
+typedef int scalar;
+
+struct pol {
 	unsigned int degree;
 	unsigned int length; /* array of scalars from 0 to length */
-	mscalar *coeffs;
-} __pol;
+	scalar *coeffs;
+};
 
-typedef __pol polynomial[1];
+typedef struct pol *polynomial;

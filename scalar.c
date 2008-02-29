@@ -26,39 +26,37 @@
 #include "data.h"
 #include "scalar.h"
 
-/* Only called once. */
-void setup_scalars(void)
-{
-	mpz_init_set_ui(prime, (unsigned long) p);
-	mpz_init(modulus);
-	mpz_ui_pow_ui(modulus, (unsigned long) p, (unsigned long) r);
-}
+static scalar *invs;
 
-void printmscalar(mscalar a)
+void change_prime(int p)
 {
-	mpz_cdiv_q_ui(temp,modulus,2);
-	if (mpz_cmp(a, temp)>0) {
-		mpz_sub(temp, a, modulus);
-		mpz_out_str(stdout, (int) 10, temp);
-	} else {
-		mpz_out_str(stdout, (int) 10, a);
+	int i,j;
+
+	if (p <= 0) {
+		printf("Primes are positive. Stop.\n");
+		exit(1);
+	}
+	if (prime) free(invs);
+
+	invs = (scalar *)malloc(p*sizeof(scalar));
+	prime = p;
+	i = 1;
+	while (i < p) {
+		j = 1;
+		while (1 != ((i*j) % prime)) j++;
+		invs[i] = j;
+		i++;
 	}
 }
 
-/* Divides a by b. If b is not a unit then this assumes 	*
- * valuation(a) >= valuation(b), and the result is lifted	*
- * to an integer mod p^r.					*/
-/* Does not destroy a and b.					*/
-void sc_div(mscalar a, mscalar b, mscalar c)
+void print_scalar(scalar a)
 {
-	unsigned long e;
-	
-	e = mpz_remove(c, b, prime);
-	mpz_invert(c, c, modulus);
-	mpz_mul(c, c, a);
-	mpz_mod(c, c, modulus);
-	while (e) {
-		mpz_divexact_ui(c, c, (unsigned long) p);
-		e--;
-	}
+	a = a % prime;
+	printf("%d", a);
+}
+
+scalar sc_inv(scalar i)
+{
+	i = i % prime;
+	return(invs[i]);
 }
