@@ -319,7 +319,7 @@ void r_reduce(polynomial r, polynomial g, polynomial f)
 	c = (prime - c) % prime;
 	while (i >= 0) {
 		q = (c * r->coeffs[r->degree]) % prime;
-		times_scalar(tmp, q, i, f);
+		times_scalar(tmp, q, i, f); /* Improve here. */
 		pol_add(r, r, tmp);
 		i = r->degree - f->degree;
 	}
@@ -380,4 +380,19 @@ void deriv(polynomial g, polynomial f)
 		i++;
 	}
 	g->coeffs[g->degree] = c;
+}
+
+int equal(polynomial g, polynomial f)
+{
+	int i;
+#ifdef KIJKEN
+	test_pol(g);
+	test_pol(f);
+#endif
+
+	if (f->degree != g->degree) return(0);
+	i=0;
+	while ((f->coeffs[i] == g->coeffs[i]) && (i <= f->degree)) i++;
+	if (i > f->degree) return(1);
+	return(0);
 }

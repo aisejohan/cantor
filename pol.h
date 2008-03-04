@@ -39,3 +39,4 @@ void qr_reduce(polynomial r, polynomial g, polynomial q, polynomial f);
 void r_reduce(polynomial r, polynomial g, polynomial f);
 void gcd(polynomial g, polynomial f, polynomial h);
 void deriv(polynomial g, polynomial f);
+int equal(polynomial g, polynomial f);

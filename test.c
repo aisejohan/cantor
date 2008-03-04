@@ -246,21 +246,6 @@ void test_deriv()
 	free_pol(&D);
 }
 
-int equal(polynomial g, polynomial f)
-{
-	int i;
-#ifdef KIJKEN
-	test_pol(g);
-	test_pol(f);
-#endif
-
-	if (f->degree != g->degree) return(0);
-	i=0;
-	while ((f->coeffs[i] == g->coeffs[i]) && (i <= f->degree)) i++;
-	if (i > f->degree) return(1);
-	return(0);
-}
-
 void test_p_power()
 {
 	int i,d;
@@ -299,6 +284,16 @@ uit:
 	free_pol(&B);
 	free_pol(&C);
 	free_pol(&g);
+}
+
+void test_next_degree()
+{
+	polynomial A;
+
+	make_pol(&A);
+	random_pol(A, 500);
+	print_pol(A);
+	print_degrees(A);
 }
 
 
@@ -469,5 +464,6 @@ int main(void )
 	test_gcd();
 	test_deriv();
 	test_p_power();
+	test_next_degree();
 	return(0);
 }

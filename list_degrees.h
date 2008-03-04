@@ -22,3 +22,5 @@
  *									*/
 
 void prime_power(polynomial h, polynomial g, polynomial f);
+int next_degree(polynomial g, polynomial f, unsigned int d, polynomial h);
+void print_degrees(polynomial f);
