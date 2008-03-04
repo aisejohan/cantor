@@ -70,30 +70,10 @@ void test_distributive_law(void )
 	make_pol(&D);
 
 	random_pol(A, 100);
-//	printf("A\n");
-//	print_pol(A);
-//	printf("\n");
-
 	random_pol(B, 100);
-//	printf("B\n");
-//	print_pol(B);
-//	printf("\n");
-
 	random_pol(C, 100);
-//	printf("C\n");
-//	print_pol(C);
-//	printf("\n");
-
 	pol_add(D, A, B);
-//	printf("A + B\n");
-//	print_pol(D);
-//	printf("\n");
-
 	pol_mult(D, C, D);
-//	printf("C * (A + B)\n");
-//	print_pol(D);
-//	printf("\n");
-
 	pol_mult(B,B,C);
 	pol_mult(A,A,C);
 	pol_add(C,A,B);
@@ -152,8 +132,13 @@ void test_reduction()
 
 	random_pol(A, 100);
 	random_pol(B, 500);
-	copy_pol(D, B);
-	reduce(r, B, q, A);
+	qr_reduce(r, B, q, A);
+	r_reduce(C, B, A);
+	times_int(C, -1, C);
+	pol_add(C, r, C);
+	printf("The following should be zero:\n");
+	print_pol(C);
+	printf("\n");
 	pol_mult(C, q, A);
 	pol_add(D, B, C);
 	times_int(r, -1, r);

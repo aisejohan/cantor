@@ -235,7 +235,7 @@ void pol_mult(polynomial h, polynomial g, polynomial f)
 }
 
 /* r = g + qf */
-void reduce(polynomial r, polynomial g, polynomial q, polynomial f)
+void qr_reduce(polynomial r, polynomial g, polynomial q, polynomial f)
 {
 	int i,j;
 	scalar c;
@@ -270,6 +270,32 @@ void reduce(polynomial r, polynomial g, polynomial q, polynomial f)
 			q->coeffs[i] = 0;
 			i--;
 		}
+	}
+	free_pol(&tmp);
+}
+
+void r_reduce(polynomial r, polynomial g, polynomial f)
+{
+	int i;
+	scalar c, q;
+	polynomial tmp;
+
+	if ((r == f) || (g == f)) {
+		printf("reduce: equal pols not allowed.\n");
+		exit(1);
+	}
+
+	if (r != g) copy_pol(r, g);
+
+	i = r->degree - f->degree;
+	make_pol(&tmp);
+	c = sc_inv(f->coeffs[f->degree]);
+	c = (prime - c) % prime;
+	while (i >= 0) {
+		q = (c * r->coeffs[r->degree]) % prime;
+		times_scalar(tmp, q, i, f);
+		pol_add(r, r, tmp);
+		i = r->degree - f->degree;
 	}
 	free_pol(&tmp);
 }
