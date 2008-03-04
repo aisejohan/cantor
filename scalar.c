@@ -51,7 +51,6 @@ void change_prime(int p)
 
 void print_scalar(scalar a)
 {
-	a = a % prime;
 	printf("%d", a);
 }
 

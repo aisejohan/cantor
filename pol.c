@@ -145,14 +145,14 @@ void pol_add(polynomial h, polynomial g, polynomial f)
 		}
 	} else {
 		i = f->degree;
-		do {
-			c =  f->coeffs[i] + g->coeffs[i] % prime;
-			&& (i > 0)) i--;
+		while ((c = (f->coeffs[i] + g->coeffs[i]) % prime) == 0 &&
+			i > 0) i--;
 		/* Note that with this convention the zero polynomial
 		 * has degree 0.*/
 		h->degree = i;
 		resize_pol(h, i);
 		h->coeffs[i] = c;
+		i--;
 	}
 	while (i >= 0) {
 		h->coeffs[i] = (g->coeffs[i] + f->coeffs[i]) % prime;
@@ -166,7 +166,7 @@ void times_int(polynomial f, int a, polynomial g)
 	scalar c;
 
 	i = g->degree;
-	while ((c = ((a * g->coeffs[i]) % prime) == 0) && (i>0)) i--;
+	while ((c = (a * g->coeffs[i]) % prime) == 0 && i > 0) i--;
 	f->degree = i;
 	resize_pol(f, f->degree);
 	f->coeffs[i] = c;
@@ -183,7 +183,7 @@ void times_scalar(polynomial f, scalar a, polynomial g)
 	scalar c;
 
 	i = g->degree;
-	while ((c = ((a * g->coeffs[i]) % prime) == 0) && (i>0)) i--;
+	while ((c = (a * g->coeffs[i]) % prime) == 0 && i > 0) i--;
 	f->degree = i;
 	resize_pol(f, f->degree);
 	f->coeffs[i] = c;
@@ -197,21 +197,36 @@ void times_scalar(polynomial f, scalar a, polynomial g)
 void pol_mult(polynomial h, polynomial g, polynomial f)
 {
 	int i,j;
+	polynomial tmp;
 
-	resize_pol(h, f->degree + g->degree);
+	make_pol(&tmp);
+	tmp->degree = f->degree + g->degree;
+	resize_pol(tmp, f->degree + g->degree);
+
+	i = f->degree + g->degree;
+	while (i >= 0) {
+		tmp->coeffs[i] = 0;
+		i--;
+	}
 
 	i = 0;
 	while (i <= f->degree) {
 		j = 0;
 		while (j <= g->degree) {
-			h->coeffs[i+j] = (f->coeffs[i] * g->coeffs[j]) % prime;
+			tmp->coeffs[i+j] = (tmp->coeffs[i+j] +
+				f->coeffs[i] * g->coeffs[j]) % prime;
 			j++;
 		}
 		i++;
 	}
 
 	i = f->degree + g->degree;
-	while ((h->coeffs[i] == 0) && (i > 0)) i--;
+	while (tmp->coeffs[i] == 0 && i > 0) i--;
 	h->degree = i;
 	resize_pol(h, h->degree);
+	while (i >= 0) {
+		h->coeffs[i] = tmp->coeffs[i];
+		i--;
+	}
+	free_pol(&tmp);
 }

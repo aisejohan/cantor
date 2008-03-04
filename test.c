@@ -58,7 +58,6 @@ void test_scalars(void )
 	print_scalar(me);
 	printf(".\n");
 	printf("\n");
-
 }
 
 void test_distributive_law(void )
@@ -69,16 +68,32 @@ void test_distributive_law(void )
 	make_pol(&B);
 	make_pol(&C);
 	make_pol(&D);
-printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
 
-	random_pol(A,10);
+	random_pol(A, 100);
+	printf("A\n");
 	print_pol(A);
-	random_pol(B,10);
+	printf("\n");
+
+	random_pol(B, 100);
+	printf("B\n");
 	print_pol(B);
-	random_pol(C,10);
-	pol_add(D,A,B);
+	printf("\n");
+
+	random_pol(C, 100);
+	printf("C\n");
+	print_pol(C);
+	printf("\n");
+
+	pol_add(D, A, B);
+	printf("A + B\n");
 	print_pol(D);
-	pol_mult(D,C,D);
+	printf("\n");
+
+	pol_mult(D, C, D);
+	printf("C * (A + B)\n");
+	print_pol(D);
+	printf("\n");
+
 	pol_mult(B,B,C);
 	pol_mult(A,A,C);
 	pol_add(C,A,B);
