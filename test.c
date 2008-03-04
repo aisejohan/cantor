@@ -155,6 +155,50 @@ void test_reduction()
 	free_pol(&r);
 }
 
+void test_gcd()
+{
+	scalar c;
+	polynomial A,B,C,D,g;
+
+	make_pol(&A);
+	make_pol(&B);
+	make_pol(&C);
+	make_pol(&D);
+	make_pol(&g);
+
+	random_pol(A, 20);
+	random_pol(B, 20);
+	random_pol(C, 20);
+
+	gcd(D, A, B);
+	pol_mult(D, D, C);
+
+	pol_mult(A, A, C);
+	pol_mult(B, B, C);
+	gcd(g, A, B);
+/*
+	printf("The gcd is:\n");
+	print_pol(g);
+	printf("\n");
+*/
+	if (D->degree != g->degree) {
+		printf("test_gcd failed\n");
+		exit(1);
+	}
+	c = sc_inv(g->coeffs[g->degree]);
+	c = (prime - c) % prime;
+	c = (D->coeffs[g->degree] * c) % prime;
+	times_scalar(g, c, 0, g);
+	pol_add(D, g, D);
+	printf("The following should be zero:\n");
+	print_pol(D);
+	printf("\n");
+
+	free_pol(&A);
+	free_pol(&B);
+	free_pol(&C);
+	free_pol(&D);
+}
 
 /*
 void test_deriv()
@@ -350,5 +394,6 @@ int main(void )
 	test_distributive_law();
 	test_associative_law();
 	test_reduction();
+	test_gcd();
 	return(0);
 }

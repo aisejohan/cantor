@@ -274,6 +274,7 @@ void qr_reduce(polynomial r, polynomial g, polynomial q, polynomial f)
 	free_pol(&tmp);
 }
 
+/* r = g mod f */
 void r_reduce(polynomial r, polynomial g, polynomial f)
 {
 	int i;
@@ -297,5 +298,31 @@ void r_reduce(polynomial r, polynomial g, polynomial f)
 		pol_add(r, r, tmp);
 		i = r->degree - f->degree;
 	}
+	free_pol(&tmp);
+}
+
+void gcd(polynomial g, polynomial f, polynomial h)
+{
+	polynomial tmp;
+
+	make_pol(&tmp);
+
+	if (h->degree > f->degree) {
+		r_reduce(tmp, h, f);
+		if (g != f) copy_pol(g, f);
+	} else {
+		r_reduce(tmp, f, h);
+		if (g != h) copy_pol(g, h);
+	}
+	while (tmp->degree > 0) {
+		r_reduce(g, g, tmp);
+		if (g->degree == 0) {
+			if (!g->coeffs[0]) copy_pol(g, tmp);
+			free_pol(&tmp);
+			return;
+		}
+		r_reduce(tmp, tmp, g);
+	}
+	if (tmp->coeffs[0]) copy_pol(g, tmp);
 	free_pol(&tmp);
 }
