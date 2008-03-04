@@ -33,7 +33,7 @@ void test_scalars(void )
 {
 	scalar ma,mb,mc,md,me;
 
-	change_prime(7);
+	change_prime(17);
 
 	printf("/* The prime is: %d. */\n",prime);
 
@@ -70,29 +70,29 @@ void test_distributive_law(void )
 	make_pol(&D);
 
 	random_pol(A, 100);
-	printf("A\n");
-	print_pol(A);
-	printf("\n");
+//	printf("A\n");
+//	print_pol(A);
+//	printf("\n");
 
 	random_pol(B, 100);
-	printf("B\n");
-	print_pol(B);
-	printf("\n");
+//	printf("B\n");
+//	print_pol(B);
+//	printf("\n");
 
 	random_pol(C, 100);
-	printf("C\n");
-	print_pol(C);
-	printf("\n");
+//	printf("C\n");
+//	print_pol(C);
+//	printf("\n");
 
 	pol_add(D, A, B);
-	printf("A + B\n");
-	print_pol(D);
-	printf("\n");
+//	printf("A + B\n");
+//	print_pol(D);
+//	printf("\n");
 
 	pol_mult(D, C, D);
-	printf("C * (A + B)\n");
-	print_pol(D);
-	printf("\n");
+//	printf("C * (A + B)\n");
+//	print_pol(D);
+//	printf("\n");
 
 	pol_mult(B,B,C);
 	pol_mult(A,A,C);
@@ -108,6 +108,66 @@ void test_distributive_law(void )
 	free_pol(&B);
 	free_pol(&C);
 	free_pol(&D);
+}
+
+void test_associative_law()
+{
+	polynomial A,B,C,D;
+
+	make_pol(&A);
+	make_pol(&B);
+	make_pol(&C);
+	make_pol(&D);
+
+	random_pol(A, 400);
+	random_pol(B, 600);
+	random_pol(C, 140);
+	pol_mult(D, A, B);
+	pol_mult(D, D, C);
+	pol_mult(B, B, C);
+	pol_mult(C, A, B);
+	times_int(C, -1, C);
+	pol_add(D, C, D);
+
+	printf("The following should be zero:\n");
+	print_pol(D);
+	printf("\n");
+
+	free_pol(&A);
+	free_pol(&B);
+	free_pol(&C);
+	free_pol(&D);
+}
+
+void test_reduction()
+{
+	polynomial A,B,C,D,q,r;
+
+	make_pol(&A);
+	make_pol(&B);
+	make_pol(&C);
+	make_pol(&D);
+	make_pol(&q);
+	make_pol(&r);
+
+	random_pol(A, 100);
+	random_pol(B, 500);
+	copy_pol(D, B);
+	reduce(r, B, q, A);
+	pol_mult(C, q, A);
+	pol_add(D, B, C);
+	times_int(r, -1, r);
+	pol_add(D, D, r);
+	printf("The following should be zero:\n");
+	print_pol(D);
+	printf("\n");
+
+	free_pol(&A);
+	free_pol(&B);
+	free_pol(&C);
+	free_pol(&D);
+	free_pol(&q);
+	free_pol(&r);
 }
 
 
@@ -172,61 +232,7 @@ void test_exponents()
 }
 
 
-void test_associative_law()
-{
-	polynomial A,B,C,D;
 
-	make_pol(A);
-	make_pol(B);
-	make_pol(C);
-	make_pol(D);
-
-	random_pol(A,400);
-	random_pol(B,600);
-	random_pol(C,140);
-	pol_mult(A,B,D);
-	pol_mult(C,D,D);
-	pol_mult(A,B,B);
-	pol_mult(B,C,C);
-	times_int(-1,C,C);
-	pol_add(D,C,D);
-
-	printf("The following should be zero:\n");
-	print_pol(D);
-	printf("\n");
-
-	free_pol(A);
-	free_pol(B);
-	free_pol(C);
-	free_pol(D);
-}
-
-void test_reduction()
-{
-	polynomial A,B,C,D;
-
-	make_pol(A);
-	make_pol(B);
-	make_pol(C);
-	make_pol(D);
-
-	random_pol(A,400);
-	random_pol(B,500);
-	copy_pol(B,D);
-	reduce_by_g_q(B,A,C);
-	pol_mult(C,A,C);
-	pol_add(C,B,C);
-	times_int(-1,C,C);
-	pol_add(C,D,D);
-	printf("The following should be zero:\n");
-	print_pol(D);
-	printf("\n");
-
-	free_pol(A);
-	free_pol(B);
-	free_pol(C);
-	free_pol(D);
-}
 
 void test_inverses()
 {
@@ -357,5 +363,7 @@ int main(void )
 {
 	test_scalars();
 	test_distributive_law();
+	test_associative_law();
+	test_reduction();
 	return(0);
 }

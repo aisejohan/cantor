@@ -63,10 +63,7 @@ void resize_pol(polynomial f, unsigned int new_length)
 	} else {
 		if (new_length < min_length) new_length = min_length;
 		if (2*new_length > f->length) return;
-		if (new_length < f->degree) {
-			printf("Truncating too much in resize_pol! STOP.");
-			exit(1);
-		}
+		if (new_length < f->degree) return;
 		ptr = realloc(f->coeffs, (new_length+1)*sizeof(scalar));
 		if (!ptr) {
 			perror("Realloc failed in resize_pol!");
@@ -77,14 +74,14 @@ void resize_pol(polynomial f, unsigned int new_length)
 	}
 }
 
-/* Copies a polynomial. Will truncate for you.		*/
-void copy_pol(polynomial f, polynomial g)
+/* Sets g equal to a copy of f. Will truncate for you.		*/
+void copy_pol(polynomial g, polynomial f)
 {
 	int i;
 	
 	g->degree = f->degree;
 	resize_pol(g, f->degree);
-	for(i = 0; i <= f->degree; i++) f->coeffs[i] = g->coeffs[i];
+	for(i = 0; i <= f->degree; i++) g->coeffs[i] = f->coeffs[i];
 }
 
 /* Prints a polynomial. 				*/
@@ -124,11 +121,11 @@ void random_pol(polynomial f, unsigned int d)
 /* This should also work if some of these are the same. */
 void pol_add(polynomial h, polynomial g, polynomial f)
 {
-	int i;
+	int i, d;
 	scalar c;
 	
 	if (f->degree > g->degree) {
-		h->degree = f->degree;
+		d = f->degree;
 		i = f->degree;
 		resize_pol(h, i);
 		while (i > g->degree) {
@@ -136,7 +133,7 @@ void pol_add(polynomial h, polynomial g, polynomial f)
 			i--;
 		}
 	} else if (f->degree < g->degree) {
-		h->degree = g->degree;
+		d = g->degree;
 		i = g->degree;
 		resize_pol(h, i);
 		while (i > f->degree) {
@@ -149,7 +146,7 @@ void pol_add(polynomial h, polynomial g, polynomial f)
 			i > 0) i--;
 		/* Note that with this convention the zero polynomial
 		 * has degree 0.*/
-		h->degree = i;
+		d = i;
 		resize_pol(h, i);
 		h->coeffs[i] = c;
 		i--;
@@ -158,6 +155,7 @@ void pol_add(polynomial h, polynomial g, polynomial f)
 		h->coeffs[i] = (g->coeffs[i] + f->coeffs[i]) % prime;
 		i--;
 	}
+	h->degree = d;
 }
 
 void times_int(polynomial f, int a, polynomial g)
@@ -177,19 +175,24 @@ void times_int(polynomial f, int a, polynomial g)
 	}
 }
 
-void times_scalar(polynomial f, scalar a, polynomial g)
+void times_scalar(polynomial f, scalar a, int power, polynomial g)
 {
 	int i;
 	scalar c;
 
 	i = g->degree;
 	while ((c = (a * g->coeffs[i]) % prime) == 0 && i > 0) i--;
-	f->degree = i;
+	f->degree = i + power;
 	resize_pol(f, f->degree);
-	f->coeffs[i] = c;
+	f->coeffs[i + power] = c;
 	i--;
 	while (i >= 0) {
-		f->coeffs[i] = (a * g->coeffs[i]) % prime;
+		f->coeffs[i + power] = (a * g->coeffs[i]) % prime;
+		i--;
+	}
+	i = power - 1;
+	while (i >= 0) {
+		f->coeffs[i] = 0;
 		i--;
 	}
 }
@@ -227,6 +230,46 @@ void pol_mult(polynomial h, polynomial g, polynomial f)
 	while (i >= 0) {
 		h->coeffs[i] = tmp->coeffs[i];
 		i--;
+	}
+	free_pol(&tmp);
+}
+
+/* r = g + qf */
+void reduce(polynomial r, polynomial g, polynomial q, polynomial f)
+{
+	int i,j;
+	scalar c;
+	polynomial tmp;
+
+	if ((q == f) || (r == f) || (g == f) || (q == r)) {
+		printf("reduce: equal pols not allowed.\n");
+		exit(1);
+	}
+
+	if (r != g) copy_pol(r, g);
+
+	i = r->degree - f->degree;
+	if (i >= 0) {
+		q->degree = i;
+		resize_pol(q, q->degree);
+	} else {
+		q->degree = 0;
+		resize_pol(q, 0);
+		q->coeffs[0] = 0;
+	}
+	make_pol(&tmp);
+	c = sc_inv(f->coeffs[f->degree]);
+	c = (prime - c) % prime;
+	while (i >= 0) {
+		q->coeffs[i] = (c * r->coeffs[r->degree]) % prime;
+		times_scalar(tmp, q->coeffs[i], i, f);
+		pol_add(r, r, tmp);
+		j = r->degree - f->degree;
+		i--;
+		while ((i > j) && (i >= 0)) {
+			q->coeffs[i] = 0;
+			i--;
+		}
 	}
 	free_pol(&tmp);
 }
