@@ -28,6 +28,7 @@
 #include "data.h"
 #include "scalar.h"
 #include "pol.h"
+#include "list_degrees.h"
 
 void test_scalars(void )
 {
@@ -200,37 +201,108 @@ void test_gcd()
 	free_pol(&D);
 }
 
-/*
 void test_deriv()
 {
-	polynomial A,B,C,D;
-	make_pol(A);
-	make_pol(B);
-	make_pol(C);
-	make_pol(D);
+	polynomial A,Ap,B,Bp,C,D;
 
-	random_pol(A,10);
-	random_pol(B,200);
-	pol_mult(A,B,C);
-	deriv(C,C);
-	times_int(-1,C,C);
-	deriv(A,D);
-	pol_mult(B,D,D);
-	pol_add(D,C,D);
-	deriv(B,B);
-	pol_mult(A,B,B);
-	pol_add(D,B,D);
+	make_pol(&A);
+	make_pol(&Ap);
+	make_pol(&B);
+	make_pol(&Bp);
+	make_pol(&C);
+	make_pol(&D);
+
+	random_pol(A, 200);
+	random_pol(B, 200);
+
+	pol_mult(C, A, B);
+	deriv(D, C);
+	deriv(Ap, A);
+
+/*
+	printf("The polynomial A:\n");
+	print_pol(A);
+	printf("The derivative of A:\n");
+	print_pol(Ap);
+	printf("\n");
+*/
+
+	deriv(Bp, B);
+	pol_mult(C, Ap, B);
+	pol_mult(A, A, Bp);
+	pol_add(C, C, A);
+	times_int(C, -1, C);
+	pol_add(D, C, D);
 
 	printf("The following should be zero:\n");
 	print_pol(D);
 	printf("\n");
 
-	free_pol(A);
-	free_pol(B);
-	free_pol(C);
-	free_pol(D);
+	free_pol(&A);
+	free_pol(&Ap);
+	free_pol(&B);
+	free_pol(&Bp);
+	free_pol(&C);
+	free_pol(&D);
 }
 
+int equal(polynomial g, polynomial f)
+{
+	int i;
+#ifdef KIJKEN
+	test_pol(g);
+	test_pol(f);
+#endif
+
+	if (f->degree != g->degree) return(0);
+	i=0;
+	while ((f->coeffs[i] == g->coeffs[i]) && (i <= f->degree)) i++;
+	if (i > f->degree) return(1);
+	return(0);
+}
+
+void test_p_power()
+{
+	int i,d;
+	polynomial A,Ap,B,C,g;
+
+	make_pol(&A);
+	make_pol(&Ap);
+	make_pol(&B);
+	make_pol(&C);
+	make_pol(&g);
+
+	/* Do not make this too large. */
+	d = 10;
+	random_pol(A, d);
+
+	deriv(Ap, A);
+	gcd(g, Ap, A);
+	if (g->degree > 0) qr_reduce(B, A, A, g);
+
+	d = A->degree;
+	if (d == 0) goto uit;
+	random_pol(B, d-1);
+
+	prime_power(C, B, A);
+
+	printf("If it hangs at this spot then prime_power is defective!\n");
+	i = 1;
+	while (!equal(B, C)) {
+		prime_power(C, C, A);
+		i++;
+	}
+
+uit:
+	free_pol(&A);
+	free_pol(&Ap);
+	free_pol(&B);
+	free_pol(&C);
+	free_pol(&g);
+}
+
+
+/*
 void test_exponents()
 {
 	int i;
@@ -395,5 +467,7 @@ int main(void )
 	test_associative_law();
 	test_reduction();
 	test_gcd();
+	test_deriv();
+	test_p_power();
 	return(0);
 }

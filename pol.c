@@ -27,6 +27,30 @@
 #include "data.h"
 #include "scalar.h"
 
+#ifdef KIJKEN
+void test_pol(polynomial f)
+{
+	int i;
+
+	if (!f->coeffs[f->degree] && f->degree) {
+		printf("Zero leading coefficient!\n");
+		exit(1);
+	}
+	i = 0;
+	while (i <= f->degree) {
+		if (f->coeffs[i] < 0) {
+			printf("Negative coefficient!\n");
+			exit(1);
+		}
+		if (f->coeffs[i] > prime) {
+			printf("Coefficient bigger than prime!\n");
+			exit(1);
+		}
+		i++;
+	}
+}
+#endif
+
 void make_pol(polynomial *f)
 {
 	*f = (polynomial) malloc(sizeof(struct pol));
@@ -37,6 +61,7 @@ void make_pol(polynomial *f)
 		perror("Malloc failed in make_pol!");
 		exit(1);
 	}
+	(*f)->coeffs[0] = 0;
 }
 
 void free_pol(polynomial *f)
@@ -308,10 +333,14 @@ void gcd(polynomial g, polynomial f, polynomial h)
 	make_pol(&tmp);
 
 	if (h->degree > f->degree) {
-		r_reduce(tmp, h, f);
+		if (f->degree) { r_reduce(tmp, h, f); }
+		else if (!f->coeffs[0]) { copy_pol(tmp, h); }
+		/* Here we use that tmp = 0 from make_pol in
+		 * the case that f is a nonzero constant. */
 		if (g != f) copy_pol(g, f);
 	} else {
-		r_reduce(tmp, f, h);
+		if (h->degree) { r_reduce(tmp, f, h); }
+		else if (!h->coeffs[0]) { copy_pol(tmp, f); }
 		if (g != h) copy_pol(g, h);
 	}
 	while (tmp->degree > 0) {
@@ -325,4 +354,30 @@ void gcd(polynomial g, polynomial f, polynomial h)
 	}
 	if (tmp->coeffs[0]) copy_pol(g, tmp);
 	free_pol(&tmp);
+}
+
+/* g = deriv(f) */
+void deriv(polynomial g, polynomial f)
+{
+	scalar c;
+	int i;
+
+	if (f->degree == 0) {
+		resize_pol(g, 0);
+		g->degree = 0;
+		g->coeffs[0] = 0;
+		return;
+	}
+
+	i = f->degree;
+	while ((c = (i * f->coeffs[i]) % prime) == 0 && i > 1) i--;
+	g->degree = i-1;
+	resize_pol(g, i-1);
+
+	i = 0;
+	while (i < g->degree) {
+		g->coeffs[i] = ((i+1) * f->coeffs[i+1]) % prime;
+		i++;
+	}
+	g->coeffs[g->degree] = c;
 }

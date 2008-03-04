@@ -1,5 +1,5 @@
 /*
- *	scalar.c
+ *	pol.c
  *
  * 	Copyright 2006 Johan de Jong
  *
@@ -23,38 +23,48 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "data.h"
 #include "scalar.h"
+#include "pol.h"
 
-static scalar *invs=NULL;
-
-void change_prime(int p)
+/* Assumes g is reduced modulo f. */
+void prime_power(polynomial h, polynomial g, polynomial f)
 {
-	int i,j;
+	int i;
+	polynomial tmp;
 
-	if (p <= 0) {
-		printf("Primes are positive. Stop.\n");
-		exit(1);
-	}
-	if (invs) free(invs);
+#ifdef KIJKEN
+	test_pol(h);
+	test_pol(g);
+	test_pol(f);
+#endif
 
-	invs = (scalar *)malloc(p*sizeof(scalar));
-	prime = p;
+	make_pol(&tmp);
+	copy_pol(tmp, g);
+
+	h->degree = 0;
+	h->coeffs[0] = 1;
+
 	i = 1;
-	while (i < p) {
-		j = 1;
-		while (1 != ((i*j) % prime)) j++;
-		invs[i] = j;
-		i++;
-	}
+	do {
+		if (prime & i) {
+			pol_mult(h, h, tmp);
+			r_reduce(h, h, f);
+		}
+		pol_mult(tmp, tmp, tmp);
+		r_reduce(tmp, tmp, f);
+		i = 2*i;
+	} while (i <= prime);
+
+	free_pol(&tmp);
 }
 
-void print_scalar(scalar a)
+/* Assumes f is square free, and h is the (p^d)th power of x modulo f.
+ * Returns the first integer e >= d such that f has factors of degree e,
+ * and sets g equal to the product of those factors, f equal to
+ * f/g and h equal to x^(p^e) modulo f/g.
+int next_degree(polynomial g, polynomial f, int d, polynomial h)
 {
-	printf("%d", a);
 }
-
-scalar sc_inv(scalar i)
-{
-	return(invs[i]);
-}
+*/

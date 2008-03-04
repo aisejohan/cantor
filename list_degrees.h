@@ -21,21 +21,4 @@
  *
  *									*/
 
-#ifdef KIJKEN
-void test_pol(polynomial f);
-#endif
-
-void make_pol(polynomial *f);
-void free_pol(polynomial *f);
-void resize_pol(polynomial f, unsigned int new_length);
-void copy_pol(polynomial f, polynomial g);
-void print_pol(polynomial f);
-void random_pol(polynomial f, unsigned int d);
-void pol_add(polynomial h, polynomial g, polynomial f);
-void times_int(polynomial f, int i, polynomial g);
-void times_scalar(polynomial f, scalar a, int power, polynomial g);
-void pol_mult(polynomial h, polynomial g, polynomial f);
-void qr_reduce(polynomial r, polynomial g, polynomial q, polynomial f);
-void r_reduce(polynomial r, polynomial g, polynomial f);
-void gcd(polynomial g, polynomial f, polynomial h);
-void deriv(polynomial g, polynomial f);
+void prime_power(polynomial h, polynomial g, polynomial f);
