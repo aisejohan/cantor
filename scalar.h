@@ -21,7 +21,19 @@
  *
  *									*/
 
+scalar *neg_invs;
+scalar **sums;
+scalar **muls;
 int prime;
 void change_prime(int p);
 void print_scalar(scalar a);
-scalar sc_inv(scalar i);
+
+/*
+scalar sc_neg_inv(scalar i);
+scalar sc_sum(scalar i, scalar j);
+scalar sc_mul(scalar i, scalar j);
+*/
+
+#define sc_neg_inv(i)		neg_invs[i]
+#define sc_sum(i,j)		sums[i][j]
+#define sc_mul(i,j)		muls[i][j]

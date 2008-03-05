@@ -44,16 +44,16 @@ void test_scalars(void )
 	printf("The number 1 is: ");
 	print_scalar(mb);
 	printf(".\n");
-	mc = 541;
+	mc = 541 % prime;
 	printf("The number 541 is: ");
 	print_scalar(mc);
 	printf(".\n");
-	md = sc_inv(mc);
+	md = sc_neg_inv(mc);
 	printf("The inverse of 541 is: ");
 	print_scalar(md);
 	printf(".\n");
-	me = mc * md % prime;
-	printf("The number 1 is: ");
+	me = (mc * md) % prime;
+	printf("The number -1 is: ");
 	print_scalar(me);
 	printf(".\n");
 	printf("\n");
@@ -73,11 +73,11 @@ void test_distributive_law(void )
 	random_pol(C, 100);
 	pol_add(D, A, B);
 	pol_mult(D, C, D);
-	pol_mult(B,B,C);
-	pol_mult(A,A,C);
-	pol_add(C,A,B);
-	times_int(C,-1,C);
-	pol_add(D,C,D);
+	pol_mult(B, B, C);
+	pol_mult(A, A, C);
+	pol_add(C, A, B);
+	times_int(C, -1, C);
+	pol_add(D, C, D);
 
 	printf("The following should be zero:\n");
 	print_pol(D);
@@ -184,8 +184,7 @@ void test_gcd()
 		printf("test_gcd failed\n");
 		exit(1);
 	}
-	c = sc_inv(g->coeffs[g->degree]);
-	c = (prime - c) % prime;
+	c = sc_neg_inv(g->coeffs[g->degree]);
 	c = (D->coeffs[g->degree] * c) % prime;
 	times_scalar(g, c, 0, g);
 	pol_add(D, g, D);
@@ -197,6 +196,7 @@ void test_gcd()
 	free_pol(&B);
 	free_pol(&C);
 	free_pol(&D);
+	free_pol(&g);
 }
 
 void test_deriv()
@@ -284,12 +284,12 @@ uit:
 	free_pol(&g);
 }
 
-void test_next_degree()
+void test_print_degrees()
 {
 	polynomial A;
 
 	make_pol(&A);
-	random_pol(A, 4000);
+	random_pol(A, 1000);
 	print_pol(A);
 	print_degrees(A);
 }
@@ -455,15 +455,18 @@ void test_substitute_speed()
 
 int main(void )
 {
+/*
 	change_prime(17);
-/*	test_scalars();
+	test_scalars();
 	test_distributive_law();
 	test_associative_law();
 	test_reduction();
 	test_gcd();
 	test_deriv();
 	test_p_power();
+	test_print_degrees();
 */
-	test_next_degree();
+	change_prime(547);
+	test_print_degrees();
 	return(0);
 }

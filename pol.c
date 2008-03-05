@@ -108,7 +108,11 @@ void copy_pol(polynomial g, polynomial f)
 	
 	g->degree = f->degree;
 	resize_pol(g, f->degree);
-	for(i = 0; i <= f->degree; i++) g->coeffs[i] = f->coeffs[i];
+	i = 0;
+	while (i <= f->degree) {
+		g->coeffs[i] = f->coeffs[i];
+		i++;
+	}
 }
 
 /* Prints a polynomial. 				*/
@@ -169,7 +173,7 @@ void pol_add(polynomial h, polynomial g, polynomial f)
 		}
 	} else {
 		i = f->degree;
-		while ((c = (f->coeffs[i] + g->coeffs[i]) % prime) == 0 &&
+		while ((c = sc_sum(f->coeffs[i], g->coeffs[i])) == 0 &&
 			i > 0) i--;
 		/* Note that with this convention the zero polynomial
 		 * has degree 0.*/
@@ -179,7 +183,7 @@ void pol_add(polynomial h, polynomial g, polynomial f)
 		i--;
 	}
 	while (i >= 0) {
-		h->coeffs[i] = (g->coeffs[i] + f->coeffs[i]) % prime;
+		h->coeffs[i] = sc_sum(g->coeffs[i], f->coeffs[i]);
 		i--;
 	}
 	h->degree = d;
@@ -190,14 +194,20 @@ void times_int(polynomial f, int a, polynomial g)
 	int i;
 	scalar c;
 
+	if (a < 0) {
+		i = (-a + prime) / prime;
+		a = prime * i + a;
+	}
+	a = a % prime;
+
 	i = g->degree;
-	while ((c = (a * g->coeffs[i]) % prime) == 0 && i > 0) i--;
+	while ((c = sc_mul(a, g->coeffs[i])) == 0 && i > 0) i--;
 	f->degree = i;
 	resize_pol(f, f->degree);
 	f->coeffs[i] = c;
 	i--;
 	while (i >= 0) {
-		f->coeffs[i] = (a * g->coeffs[i]) % prime;
+		f->coeffs[i] = sc_mul(a, g->coeffs[i]);
 		i--;
 	}
 }
@@ -208,13 +218,13 @@ void times_scalar(polynomial f, scalar a, int power, polynomial g)
 	scalar c;
 
 	i = g->degree;
-	while ((c = (a * g->coeffs[i]) % prime) == 0 && i > 0) i--;
+	while ((c = sc_mul(a, g->coeffs[i])) == 0 && i > 0) i--;
 	f->degree = i + power;
 	resize_pol(f, f->degree);
 	f->coeffs[i + power] = c;
 	i--;
 	while (i >= 0) {
-		f->coeffs[i + power] = (a * g->coeffs[i]) % prime;
+		f->coeffs[i + power] = sc_mul(a, g->coeffs[i]);
 		i--;
 	}
 	i = power - 1;
@@ -243,8 +253,8 @@ void pol_mult(polynomial h, polynomial g, polynomial f)
 	while (i <= f->degree) {
 		j = 0;
 		while (j <= g->degree) {
-			tmp->coeffs[i+j] = (tmp->coeffs[i+j] +
-				f->coeffs[i] * g->coeffs[j]) % prime;
+			tmp->coeffs[i+j] = sc_sum(tmp->coeffs[i+j],
+				sc_mul(f->coeffs[i], g->coeffs[j]));
 			j++;
 		}
 		i++;
@@ -285,10 +295,9 @@ void qr_reduce(polynomial r, polynomial g, polynomial q, polynomial f)
 		q->coeffs[0] = 0;
 	}
 	make_pol(&tmp);
-	c = sc_inv(f->coeffs[f->degree]);
-	c = (prime - c) % prime;
+	c = sc_neg_inv(f->coeffs[f->degree]);
 	while (i >= 0) {
-		q->coeffs[i] = (c * r->coeffs[r->degree]) % prime;
+		q->coeffs[i] = sc_mul(c, r->coeffs[r->degree]);
 		times_scalar(tmp, q->coeffs[i], i, f);
 		pol_add(r, r, tmp);
 		j = r->degree - f->degree;
@@ -315,14 +324,13 @@ void r_reduce(polynomial r, polynomial g, polynomial f)
 	if (r != g) copy_pol(r, g);
 
 	i = r->degree - f->degree;
-	c = sc_inv(f->coeffs[f->degree]);
-	c = (prime - c) % prime;
+	c = sc_neg_inv(f->coeffs[f->degree]);
 	while (i >= 0) {
-		q = (c * r->coeffs[r->degree]) % prime;
+		q = sc_mul(c, r->coeffs[r->degree]);
 		j = 0;
 		while (j < f->degree) {
-			r->coeffs[j+i] =
-				(r->coeffs[j+i] + q * f->coeffs[j]) % prime;
+			r->coeffs[j+i] = sc_sum(r->coeffs[j+i],
+				sc_mul(q, f->coeffs[j]));
 			j++;
 		}
 		r->degree--;
@@ -392,11 +400,11 @@ void gcd_variant(polynomial g, polynomial f, polynomial h)
 			db = dt;
 		}
 		i = da - db;
-		c = (prime - sc_inv(b[db])) % prime;
-		c = (a[da] * c) % prime;
+		c = sc_neg_inv(b[db]);
+		c = sc_mul(a[da], c);
 		j = 0;
 		while (j < db) {
-			a[j+i] = (a[j+i] + c * b[j]) % prime;
+			a[j+i] = sc_sum(a[j+i], sc_mul(c, b[j]));
 			j++;
 		}
 		da--;
