@@ -86,6 +86,7 @@ void resize_pol(polynomial f, unsigned int new_length)
 		f->coeffs = (scalar *) ptr;
 		f->length = new_length;
 	} else {
+/*
 		if (new_length < min_length) new_length = min_length;
 		if (2*new_length > f->length) return;
 		if (new_length < f->degree) return;
@@ -96,6 +97,7 @@ void resize_pol(polynomial f, unsigned int new_length)
 		}
 		f->coeffs = (scalar *) ptr;
 		f->length = new_length;
+*/
 	}
 }
 
@@ -302,9 +304,8 @@ void qr_reduce(polynomial r, polynomial g, polynomial q, polynomial f)
 /* r = g mod f */
 void r_reduce(polynomial r, polynomial g, polynomial f)
 {
-	int i;
+	int i, j;
 	scalar c, q;
-	polynomial tmp;
 
 	if ((r == f) || (g == f)) {
 		printf("reduce: equal pols not allowed.\n");
@@ -314,16 +315,20 @@ void r_reduce(polynomial r, polynomial g, polynomial f)
 	if (r != g) copy_pol(r, g);
 
 	i = r->degree - f->degree;
-	make_pol(&tmp);
 	c = sc_inv(f->coeffs[f->degree]);
 	c = (prime - c) % prime;
 	while (i >= 0) {
 		q = (c * r->coeffs[r->degree]) % prime;
-		times_scalar(tmp, q, i, f); /* Improve here. */
-		pol_add(r, r, tmp);
+		j = 0;
+		while (j < f->degree) {
+			r->coeffs[j+i] =
+				(r->coeffs[j+i] + q * f->coeffs[j]) % prime;
+			j++;
+		}
+		r->degree--;
+		while (!r->coeffs[r->degree] && r->degree > 0) r->degree--;
 		i = r->degree - f->degree;
 	}
-	free_pol(&tmp);
 }
 
 void gcd(polynomial g, polynomial f, polynomial h)
@@ -354,6 +359,71 @@ void gcd(polynomial g, polynomial f, polynomial h)
 	}
 	if (tmp->coeffs[0]) copy_pol(g, tmp);
 	free_pol(&tmp);
+}
+
+void gcd_variant(polynomial g, polynomial f, polynomial h)
+{
+	int i, j, da, db, dt;
+	scalar c;
+	scalar *a, *b, *t;
+
+	da = f->degree;
+	a = (scalar *) malloc((da + 1) * sizeof(scalar));
+	i = da;
+	while (i >= 0) {
+		a[i] = f->coeffs[i];
+		i--;
+	}
+	db = h->degree;
+	b = (scalar *) malloc((db + 1) * sizeof(scalar));
+	i = db;
+	while (i >= 0) {
+		b[i] = h->coeffs[i];
+		i--;
+	}
+
+	while ((db) && (da)) {
+		if (da < db) {
+			t = a;
+			a = b;
+			b = t;
+			dt = da;
+			da = db;
+			db = dt;
+		}
+		i = da - db;
+		c = (prime - sc_inv(b[db])) % prime;
+		c = (a[da] * c) % prime;
+		j = 0;
+		while (j < db) {
+			a[j+i] = (a[j+i] + c * b[j]) % prime;
+			j++;
+		}
+		da--;
+		while (!a[da] && da > 0) da--;
+	}
+
+	if ((da == 0 && (a[da])) || (db == 0 && (b[db]))) {
+		g->degree = 0;
+		g->coeffs[0] = 1;
+		resize_pol(g, g->degree);
+	} else {
+		if (db == 0) {
+			db = da;
+			t = b;
+			b = a;
+			a = t;
+		}
+		g->degree = db;
+		resize_pol(g, g->degree);
+		i = db;
+		while (i >= 0) {
+			g->coeffs[i] = b[i];
+			i--;
+		}
+	}
+	free(a);
+	free(b);
 }
 
 /* g = deriv(f) */

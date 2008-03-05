@@ -34,8 +34,6 @@ void test_scalars(void )
 {
 	scalar ma,mb,mc,md,me;
 
-	change_prime(17);
-
 	printf("/* The prime is: %d. */\n",prime);
 
 	ma = 0;
@@ -291,7 +289,7 @@ void test_next_degree()
 	polynomial A;
 
 	make_pol(&A);
-	random_pol(A, 500);
+	random_pol(A, 4000);
 	print_pol(A);
 	print_degrees(A);
 }
@@ -457,13 +455,15 @@ void test_substitute_speed()
 
 int main(void )
 {
-	test_scalars();
+	change_prime(17);
+/*	test_scalars();
 	test_distributive_law();
 	test_associative_law();
 	test_reduction();
 	test_gcd();
 	test_deriv();
 	test_p_power();
+*/
 	test_next_degree();
 	return(0);
 }
