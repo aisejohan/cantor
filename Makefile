@@ -1,10 +1,10 @@
 all:
-	gcc -pedantic -Wall -O3 -march=nocona -c *.c
-	gcc -O3 -march=nocona -o tester *.o
+	gcc -pedantic -Wall -O3 -march=nocona -c main.c pol.c scalar.c xu_and_sparse.c
+	gcc -O3 -march=nocona -o tester main.o pol.o scalar.o xu_and_sparse.o
 
 test:
-	gcc -g -Wall -pedantic -std=c99 -c scalar.c pol.c test.c
-	gcc -g -o tester scalar.o pol.o test.o
+	gcc -g -Wall -pedantic -std=c99 -c list_degrees.c pol.c scalar.c test.c  xu_and_sparse.c
+	gcc -g -o tester list_degrees.o pol.o scalar.o test.o xu_and_sparse.o
 
 clean:
 	rm -f tester tijdelijk gmon.out
@@ -15,5 +15,5 @@ debug:
 	gcc -g -Wall -o tester *.o
 
 profiler:
-	gcc -pg -DPROFILER -Wall -O2 -march=nocona -c *.c
-	gcc -pg -Wall -O2 -march=nocona -o tester *.o
+	gcc -pg -DPROFILER -Wall -O2 -march=nocona -c main.c pol.c scalar.c xu_and_sparse.c
+	gcc -pg -Wall -O2 -march=nocona -o tester main.o pol.o scalar.o xu_and_sparse.o

@@ -27,7 +27,7 @@
 
 
 /* This type will be used for our scalars. */
-typedef unsigned int scalar;
+typedef unsigned short int scalar;
 
 struct pol {
 	unsigned int degree;

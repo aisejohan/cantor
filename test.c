@@ -29,6 +29,7 @@
 #include "scalar.h"
 #include "pol.h"
 #include "list_degrees.h"
+#include "xu_and_sparse.h"
 
 void test_scalars(void )
 {
@@ -289,173 +290,73 @@ void test_print_degrees()
 	polynomial A;
 
 	make_pol(&A);
-	random_pol(A, 1000);
+	random_pol(A, 40);
+	printf("\n");
+	printf("\n");
 	print_pol(A);
 	print_degrees(A);
 }
 
-
-/*
-void test_exponents()
+void test_sparse_reduce()
 {
-	int i;
-	struct exponents e;
-	polynomial A,B,C,D;
+	polynomial A, B, C, D;
+	sparse_polynomial sA;
 
-	make_pol(A);
-	make_pol(B);
-	make_pol(C);
-	make_pol(D);
-	
-	random_pol(B,8);
-	for(i = 1; i <= 3; i++) {
-		print_pol(B);
-		e = take_exponents(B);
-		printf("The length is %d and the degree is %d.\n",
-			B->length, B->degree);
-		printf("The valuation is %d and the pivot is %d.\n",
-			e.val, e.piv);
-		times_int(p*p+1,B,B);
-	}
-	printf("\n");
-
-	free_pol(A);
-	free_pol(B);
-	free_pol(C);
-	free_pol(D);
-}
-
-
-
-
-void test_inverses()
-{
-	polynomial A,B,C,D;
-
-	make_pol(A);
-	make_pol(B);
-	make_pol(C);
-	make_pol(D);
-
-	random_pol(B,17);
-	times_int(p,B,B);
-	random_pol(A,0);
-	pol_add(A,B,A);
-	invert_unit(A,C);
-	printf("The degree of the inverse is %d.\n", C->degree);
-	pol_mult(A,C,D);
-	
-	printf("The following should be one:\n");
-	print_pol(D);
-	printf("\n");
-
-	free_pol(A);
-	free_pol(B);
-	free_pol(C);
-	free_pol(D);
-}
-
-void test_substitution()
-{
-	int i,uit;
-	polynomial A,B,C,D;
-
-	make_pol(A);
-	make_pol(B);
-	make_pol(C);
-	make_pol(D);
-
+	make_pol(&A);
+	make_pol(&B);
+	make_pol(&C);
+	make_pol(&D);
 	random_pol(A, 20);
-	random_pol(B, 20);
-	substitute(A, B, D);
-	deriv(D, D);
-	deriv(A, A);
-	substitute(A, B, C);
-	deriv(B, B);
-	pol_mult(B, C, C);
-	negate_pol(C, C);
-	pol_add(C, D, D);
+	random_pol(B, 30);
 
+	convert_to_sparse(&sA, A);
+
+	r_reduce(D, B, A);
+	r_reduce_sparse(C, B, sA);
+	times_int(C, -1, C);
+	pol_add(C, C, D);
 	printf("The following should be zero:\n");
-	print_pol(D);
-	printf("\n");
-
-	for(i = 0; i<= 3; i++) {
-		random_pol(A, 50);
-		random_pol(B, 50);
-		uit = euclidean_mod_p(A, B, C, D);
-		if (!uit) {
-			printf("Not rel prime: \n");
-			print_pol(A);
-			print_pol(B);
-		} else {
-			printf("Rel prime: \n");
-			invert_unit_mod_g(A, B, C);
-			print_pol(A);
-			print_pol(B);
-			print_pol(C);
-		}
-	}
-	printf("\n");
-
-	free_pol(A);
-	free_pol(B);
-	free_pol(C);
-	free_pol(D);
-}
-
-void test_frob_lift()
-{
-	polynomial A,B,C,D;
-
-	make_pol(A);
-	make_pol(B);
-	make_pol(C);
-	make_pol(D);
-
-	random_pol(A,20);
-	print_pol(A);
-
-	frob_lift(A, B);
-	print_pol(B);
-	put_out(B);
-	printf("\n");
-
-	free_pol(A);
-	free_pol(B);
-	free_pol(C);
-	free_pol(D);
-}
-
-void test_substitute_speed()
-{
-	polynomial A,B,C,D;
-
-	make_pol(A);
-	make_pol(B);
-	make_pol(C);
-	make_pol(D);
-
-	random_pol(A, 251);
-	random_pol(B, 36);
-	substitute(B, A, C);
-	printf("A = ");
-	print_pol(A);
-	printf("B = ");
-	print_pol(B);
-	printf("C = ");
 	print_pol(C);
 
-	free_pol(A);
-	free_pol(B);
-	free_pol(C);
-	free_pol(D);
+	free_pol(&A);
+	free_pol(&B);
+	free_pol(&C);
+	free_pol(&D);
+	free_sparse_pol(&sA);
 }
-*/
+
+void test_xu_to_sparse()
+{
+	int nr, i;
+	int primes[100] = {2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,257,263,269,271,277,281,283,293,307,311,313,317,331,337,347,349,353,359,367,373,379,383,389,397,401,409,419,421,431,433,439,443,449,457,461,463,467,479,487,491,499,503,509,521,523,541};
+	xu_polynomial A;
+	sparse_polynomial sB;
+	polynomial B;
+
+	make_pol(&B);
+	random_xu(&A, 4, 3);
+
+	i = 0;
+	while (i <= 10) {
+		change_prime(primes[i]);
+		nr = xu_to_sparse(&sB, A);
+		if (nr) {
+			sparse_to_pol(B, sB);
+			printf("\n");
+			printf("\n");
+			print_pol(B);
+			print_degrees_sparse(B, sB);
+			free_sparse_pol(&sB);
+		}
+		i++;
+	}
+
+	free_pol(&B);
+	free_xu_pol(&A);
+}
 
 int main(void )
 {
-/*
 	change_prime(17);
 	test_scalars();
 	test_distributive_law();
@@ -465,8 +366,10 @@ int main(void )
 	test_deriv();
 	test_p_power();
 	test_print_degrees();
-*/
-	change_prime(547);
+
+	change_prime(61);
 	test_print_degrees();
+	test_sparse_reduce();
+	test_xu_to_sparse();
 	return(0);
 }

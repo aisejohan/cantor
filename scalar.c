@@ -26,8 +26,6 @@
 #include "data.h"
 #include "scalar.h"
 
-static int first_time = 1;
-
 void change_prime(int p)
 {
 	int i,j;
@@ -37,19 +35,18 @@ void change_prime(int p)
 		exit(1);
 	}
 
-	if (!first_time) {
+	if (neg_invs) {
 		free(neg_invs);
 		i = 0;
-		while (i < p) {
+		while (i < prime) {
 			free(sums[i]);
 			free(muls[i]);
 			i++;
 		}
 		free(sums);
 		free(muls);
-		first_time = 0;
 	}
-
+	
 	neg_invs = (scalar *)malloc(p*sizeof(scalar));
 	sums = (scalar **)malloc(p*sizeof(scalar *));
 	muls = (scalar **)malloc(p*sizeof(scalar *));

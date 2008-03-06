@@ -92,7 +92,7 @@ int next_degree(polynomial g, polynomial f, unsigned int d, polynomial h)
 			return(d);
 		}
 		h->coeffs[1] = (h->coeffs[1] + prime - 1) % prime;
-		gcd_variant(g, h, f);
+		gcd(g, h, f);
 		h->coeffs[1] = (h->coeffs[1] + 1) % prime;
 		if (g->degree > 0) {
 			make_pol(&tmp1);

@@ -38,10 +38,6 @@ void test_pol(polynomial f)
 	}
 	i = 0;
 	while (i <= f->degree) {
-		if (f->coeffs[i] < 0) {
-			printf("Negative coefficient!\n");
-			exit(1);
-		}
 		if (f->coeffs[i] > prime) {
 			printf("Coefficient bigger than prime!\n");
 			exit(1);
@@ -194,11 +190,8 @@ void times_int(polynomial f, int a, polynomial g)
 	int i;
 	scalar c;
 
-	if (a < 0) {
-		i = (-a + prime) / prime;
-		a = prime * i + a;
-	}
 	a = a % prime;
+	if (a < 0) a = prime + a;
 
 	i = g->degree;
 	while ((c = sc_mul(a, g->coeffs[i])) == 0 && i > 0) i--;
@@ -340,36 +333,6 @@ void r_reduce(polynomial r, polynomial g, polynomial f)
 }
 
 void gcd(polynomial g, polynomial f, polynomial h)
-{
-	polynomial tmp;
-
-	make_pol(&tmp);
-
-	if (h->degree > f->degree) {
-		if (f->degree) { r_reduce(tmp, h, f); }
-		else if (!f->coeffs[0]) { copy_pol(tmp, h); }
-		/* Here we use that tmp = 0 from make_pol in
-		 * the case that f is a nonzero constant. */
-		if (g != f) copy_pol(g, f);
-	} else {
-		if (h->degree) { r_reduce(tmp, f, h); }
-		else if (!h->coeffs[0]) { copy_pol(tmp, f); }
-		if (g != h) copy_pol(g, h);
-	}
-	while (tmp->degree > 0) {
-		r_reduce(g, g, tmp);
-		if (g->degree == 0) {
-			if (!g->coeffs[0]) copy_pol(g, tmp);
-			free_pol(&tmp);
-			return;
-		}
-		r_reduce(tmp, tmp, g);
-	}
-	if (tmp->coeffs[0]) copy_pol(g, tmp);
-	free_pol(&tmp);
-}
-
-void gcd_variant(polynomial g, polynomial f, polynomial h)
 {
 	int i, j, da, db, dt;
 	scalar c;
