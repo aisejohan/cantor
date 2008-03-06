@@ -43,7 +43,7 @@ int main()
 	print_xu_pol(A);
 
 	i = 0;
-	while (i <= 99) {
+	while (i <= 50) {
 		change_prime(primes[i]);
 		nr = xu_to_sparse(&sB, A);
 		if (nr) {

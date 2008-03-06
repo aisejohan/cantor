@@ -230,38 +230,29 @@ void times_scalar(polynomial f, scalar a, int power, polynomial g)
 void pol_mult(polynomial h, polynomial g, polynomial f)
 {
 	int i,j;
-	polynomial tmp;
+	unsigned int *tmp;
 
-	make_pol(&tmp);
-	tmp->degree = f->degree + g->degree;
-	resize_pol(tmp, f->degree + g->degree);
-
-	i = f->degree + g->degree;
-	while (i >= 0) {
-		tmp->coeffs[i] = 0;
-		i--;
-	}
+	tmp = calloc(f->degree + g->degree + 1, sizeof(unsigned int));
 
 	i = 0;
 	while (i <= f->degree) {
 		j = 0;
 		while (j <= g->degree) {
-			tmp->coeffs[i+j] = sc_sum(tmp->coeffs[i+j],
-				sc_mul(f->coeffs[i], g->coeffs[j]));
+			tmp[i+j] += sc_mul(f->coeffs[i], g->coeffs[j]);
 			j++;
 		}
 		i++;
 	}
 
 	i = f->degree + g->degree;
-	while (tmp->coeffs[i] == 0 && i > 0) i--;
+	while ((tmp[i] % prime) == 0 && i > 0) i--;
 	h->degree = i;
 	resize_pol(h, h->degree);
 	while (i >= 0) {
-		h->coeffs[i] = tmp->coeffs[i];
+		h->coeffs[i] = tmp[i] % prime;
 		i--;
 	}
-	free_pol(&tmp);
+	free(tmp);
 }
 
 /* r = g + qf */
