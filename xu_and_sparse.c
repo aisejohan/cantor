@@ -122,6 +122,30 @@ void random_xu(xu_polynomial *f, unsigned int dx, unsigned int du)
 	}
 }
 
+void read_xu(xu_polynomial *f, unsigned int dx, unsigned int du)
+{
+	int i,j,c;
+
+	printf("Give the coefficients of f: \n");
+
+	*f = (xu_polynomial) malloc(sizeof(struct xu_pol));
+	(*f)->dx = dx;
+	(*f)->du = du;
+	(*f)->coeffs = (int **)malloc((dx + 1)*sizeof(int *));
+	i = 0;
+	while (i <= dx) {
+		(*f)->coeffs[i] = (int *)malloc((du + 1)*sizeof(int));
+		j = 0;
+		while (j <= du) {
+			printf("Coeff of x^%d u^%d: ",i, j);
+			scanf("%d", &c);
+			(*f)->coeffs[i][j] = c;
+			j++;
+		}
+		i++;
+	}
+}
+
 void free_xu_pol(xu_polynomial *f)
 {
 	int i;
@@ -312,7 +336,7 @@ int next_degree_sparse(
 
 void print_degrees_sparse(polynomial f, sparse_polynomial sf)
 {
-	int e, i;
+	int e, i, y;
 	polynomial h;
 	polynomial g;
 
@@ -322,18 +346,28 @@ void print_degrees_sparse(polynomial f, sparse_polynomial sf)
 	h->degree = 1;
 	h->coeffs[1] = 1;
 
+	y = 1;
 	e = 0;
 	do {
 		e = next_degree_sparse(g, f, sf, e, h);
 		if (e) {
 			i = 0;
 			while (i < g->degree/e) {
-				printf("%d, ", e);
+				if (y) {
+					printf("%d", e);
+					y = 0;
+				} else {
+					printf(", %d", e);
+				}
 				fflush(stdout);
 				i++;
 			}
 		} else {
-			printf("%d.\n", f->degree);
+			if (y) {
+				printf("%d", f->degree);
+			} else {
+				printf(", %d", f->degree);
+			}
 		}
 	} while (e);
 	free_pol(&h);

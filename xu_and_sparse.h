@@ -43,6 +43,7 @@ void convert_to_sparse(sparse_polynomial *sA, polynomial A);
 void free_sparse_pol(sparse_polynomial *f);
 void r_reduce_sparse(polynomial r, polynomial g, sparse_polynomial f);
 void random_xu(xu_polynomial *f, unsigned int dx, unsigned int du);
+void read_xu(xu_polynomial *f, unsigned int dx, unsigned int du);
 void free_xu_pol(xu_polynomial *f);
 int xu_to_sparse(sparse_polynomial *sA, xu_polynomial A);
 void print_xu_pol(xu_polynomial A);
