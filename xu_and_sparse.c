@@ -114,7 +114,7 @@ void random_xu(xu_polynomial *f, unsigned int dx, unsigned int du)
 		(*f)->coeffs[i] = (int *)malloc((du + 1)*sizeof(int));
 		j = 0;
 		while (j <= du) {
-			(*f)->coeffs[i][j] = (rand() % 100) - 50;
+			(*f)->coeffs[i][j] = (rand() % 3) - 1;
 /*			rand() - (RAND_MAX > 1);  */
 			j++;
 		}
@@ -306,25 +306,31 @@ int next_degree_sparse(
 	d++;
 	while (2*d <= f->degree) {
 		prime_power_sparse(h, h, f, sf);
-		if (h->degree == 1 && h->coeffs[1] == 1 && h->coeffs[0] == 0) {
-			copy_pol(g, f);
-			f->degree = 0;
-			f->coeffs[0] = 1;
-			resize_pol(f, f->degree);
-			h->degree = 0;
-			h->coeffs[0] = 0;
-			resize_pol(h, h->degree);
-			return(d);
+		if (h->degree == 1 && h->coeffs[1] == 1) {
+			if (h->coeffs[0] == 0) {
+				copy_pol(g, f);
+				f->degree = 0;
+				f->coeffs[0] = 1;
+				resize_pol(f, f->degree);
+				h->degree = 0;
+				h->coeffs[0] = 0;
+				resize_pol(h, h->degree);
+				return(d);
+			}
+			/* This is the case where h = x + a, a not 0. */
+			g->degree = 0;
+			g->coeffs[0] = 1;
+		} else {
+			h->coeffs[1] = (h->coeffs[1] + prime - 1) % prime;
+			gcd(g, h, f);
+			h->coeffs[1] = (h->coeffs[1] + 1) % prime;
 		}
-		h->coeffs[1] = (h->coeffs[1] + prime - 1) % prime;
-		gcd(g, h, f);
-		h->coeffs[1] = (h->coeffs[1] + 1) % prime;
 		if (g->degree > 0) {
 			make_pol(&tmp1);
 			make_pol(&tmp2);
 			qr_reduce(tmp1, f, tmp2, g);
 			copy_pol(f, tmp2);
-			r_reduce(h, h, f);
+			if (f->degree) r_reduce(h, h, f); /* FIXME */
 			free_pol(&tmp1);
 			free_pol(&tmp2);
 			return(d);
@@ -362,11 +368,14 @@ void print_degrees_sparse(polynomial f, sparse_polynomial sf)
 				fflush(stdout);
 				i++;
 			}
+			if (!f->degree) e = 0;
 		} else {
-			if (y) {
-				printf("%d", f->degree);
-			} else {
-				printf(", %d", f->degree);
+			if (f->degree) {
+				if (y) {
+					printf("%d", f->degree);
+				} else {
+					printf(", %d", f->degree);
+				}
 			}
 		}
 	} while (e);
