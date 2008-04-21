@@ -60,80 +60,128 @@ void prime_power(polynomial h, polynomial g, polynomial f)
 	free_pol(&tmp);
 }
 
-/* Assumes f is square free, has no divisors of degree <= d and
- * h is the (p^d)th power of x modulo f.
- * Returns the first integer e >= d such that f has factors of degree e,
- * and sets g equal to the product of those factors, f equal to
- * f/g and h equal to x^(p^e) modulo f/g.
- * Returns 0 if f irreducible, in which case f is unchanged but h and
- * g do not have meaning. */
-int next_degree(polynomial g, polynomial f, unsigned int d, polynomial h)
+/* Can improve by introducing squaring function. */
+scalar *frobs_mod_f(polynomial f)
 {
-	polynomial tmp1, tmp2;
+	int d, e, i;
+	polynomial h;
+	polynomial g;
+	scalar *frobs;
 
-#ifdef KIJKEN
-	if ((f == g) || (f == h) || (g == h)) {
-		printf("Should not have same pols in next_degree.");
-		exit(1);
+	d = f->degree;
+	frobs = (scalar *) calloc(d*d, sizeof(scalar));
+
+	make_pol(&h);
+	h->degree = 0;
+	h->coeffs[0] = 1;
+
+	frobs[0] = 1;
+
+	make_pol(&g);
+	g->degree = prime;
+	resize_pol(g, g->degree);
+	i = 0;
+	while (i < prime) {
+		g->coeffs[i] = 0;
+		i++;
 	}
-#endif
+	g->coeffs[prime] = 1;
+	r_reduce(g, g, f);
 
-	d++;
-	while (2*d <= f->degree) {
-		prime_power(h, h, f);
-		if (h->degree == 1 && h->coeffs[1] == 1 && h->coeffs[0] == 0) {
-			copy_pol(g, f);
-			f->degree = 0;
-			f->coeffs[0] = 1;
-			resize_pol(f, f->degree);
-			h->degree = 0;
-			h->coeffs[0] = 0;
-			resize_pol(h, h->degree);
-			return(d);
+	e = 1;
+	while (e < d) {
+		pol_mult(h, h, g);
+		r_reduce(h, h, f);
+		i = 0;
+		while (i <= h->degree) {
+			frobs[e*d + i] = h->coeffs[i];
+			i++;
 		}
+		e++;
+	}
+
+	free_pol(&h);
+	free_pol(&g);
+	return(frobs);
+}
+
+void fast_prime_power_mod(polynomial h, int d, scalar *frobs)
+{
+	int i, j;
+	scalar c;
+	unsigned int *tmp;
+
+	tmp = calloc(d, sizeof(unsigned int));
+	i = 0;
+	while (i <= h->degree) {
+		j = 0;
+		while (j < d) {
+			tmp[j] += sc_mul(h->coeffs[i], frobs[i*d + j]);
+			j++;
+		}
+		i++;
+	}
+	i = d - 1;
+	while (((c = tmp[i] % prime) == 0) && (i > 0))  i--;
+	h->degree = i;
+	resize_pol(h, h->degree);
+	j = 0;
+	while (j < i) {
+		h->coeffs[j] = tmp[j] % prime;
+		j++;
+	}
+	h->coeffs[h->degree] = c;
+	free(tmp);
+}
+
+/* f has to be square free, prime to x and degree >= 2. */
+int *list_degrees_sq_x_free(polynomial f)
+{
+	int a, d, e, i, nr;
+	int *list;
+	scalar *frobs;
+	polynomial h;
+	polynomial g;
+	polynomial tmp1;
+	polynomial tmp2;
+
+	make_pol(&h);
+	h->degree = 1;
+	h->coeffs[1] = 1;
+
+	make_pol(&g);
+	make_pol(&tmp1);
+	make_pol(&tmp2);
+
+	list = (int *) malloc(f->degree * sizeof(int));
+
+	a = 0;
+	e = 1;
+	d = f->degree;
+	frobs = frobs_mod_f(f);
+	while (f->degree >= 2*e) {
+		fast_prime_power_mod(h, d, frobs);
 		h->coeffs[1] = (h->coeffs[1] + prime - 1) % prime;
 		gcd(g, h, f);
 		h->coeffs[1] = (h->coeffs[1] + 1) % prime;
 		if (g->degree > 0) {
-			make_pol(&tmp1);
-			make_pol(&tmp2);
+			nr = g->degree / e;
+			i = 0;
+			while (i < nr) {
+				a++;
+				list[a] = e;
+				i++;
+			}
 			qr_reduce(tmp1, f, tmp2, g);
 			copy_pol(f, tmp2);
-			r_reduce(h, h, f);
-			free_pol(&tmp1);
-			free_pol(&tmp2);
-			return(d);
 		}
-		d++;
+		e++;
 	}
-	return(0);
+	if (f->degree) {
+		a++;
+		list[a] = f->degree;
+	}
+	list[0] = a;
+	return(list);
 }
 
-void print_degrees(polynomial f)
-{
-	int e;
-	polynomial h;
-	polynomial g;
-
-	make_pol(&h);
-	make_pol(&g);
-
-	h->degree = 1;
-	h->coeffs[1] = 1;
-
-	e = 0;
-	do {
-		e = next_degree(g, f, e, h);
-		if (e) {
-			printf("We have factors of degree %d"
-			" with multiplicity %d.\n", e, g->degree/e);
-			print_pol(g);
-		} else {
-			printf("Irreducible factor of degree %d.\n",
-				f->degree);
-			print_pol(f);
-		}
-	} while (e);
-	free_pol(&h);
-	free_pol(&g);
-}

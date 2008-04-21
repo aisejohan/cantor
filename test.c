@@ -287,14 +287,24 @@ uit:
 
 void test_print_degrees()
 {
+	int i;
+	int *list;
 	polynomial A;
 
 	make_pol(&A);
-	random_pol(A, 40);
-	printf("\n");
-	printf("\n");
+	random_pol(A, 1000);
 	print_pol(A);
-	print_degrees(A);
+	printf("\n");
+	printf("\n");
+	list = list_degrees_sq_x_free(A);
+	i = 1;
+	printf("[");
+	while (i < list[0]) {
+		printf("%d, ", list[i]);
+		i++;
+	}
+	printf("%d]\n", list[i]);
+	printf("THE END.\n");
 }
 
 void test_sparse_reduce()
@@ -367,9 +377,9 @@ int main(void )
 	test_p_power();
 	test_print_degrees();
 
-	change_prime(61);
+/*	change_prime(61);
 	test_print_degrees();
 	test_sparse_reduce();
-	test_xu_to_sparse();
+	test_xu_to_sparse(); */
 	return(0);
 }

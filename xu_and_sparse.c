@@ -249,8 +249,7 @@ void sparse_to_pol(polynomial A, sparse_polynomial sA)
 	}
 }
 
-void
-prime_power_sparse(
+void prime_power_sparse(
 	polynomial h,
 	polynomial g,
 	polynomial f,

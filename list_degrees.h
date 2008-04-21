@@ -22,5 +22,6 @@
  *									*/
 
 void prime_power(polynomial h, polynomial g, polynomial f);
-int next_degree(polynomial g, polynomial f, unsigned int d, polynomial h);
-void print_degrees(polynomial f);
+scalar *frobs_mod_f(polynomial f);
+void fast_prime_power_mod(polynomial h, int d, scalar *frobs);
+int *list_degrees_sq_x_free(polynomial f);

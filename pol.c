@@ -114,17 +114,17 @@ void copy_pol(polynomial g, polynomial f)
 /* Prints a polynomial. 				*/
 void print_pol(polynomial f)
 {
-	int i,y=0;
+	int i, y = 0;
 
 	if (f->coeffs[0] % prime) {
-			y=1;
+			y = 1;
 			print_scalar(f->coeffs[0]);
-	} else if(f->degree == 0) printf("0");
+	} else if (f->degree == 0) printf("0");
 
-	for(i=1; i<=f->degree; i++) {
+	for (i = 1; i <= f->degree; i++) {
 		if (f->coeffs[i] % prime) {
 			if (y) printf(" + ");
-			y=1;
+			y = 1;
 			print_scalar(f->coeffs[i]);
 			printf("*x^%d", i);
 		}
@@ -394,16 +394,17 @@ void deriv(polynomial g, polynomial f)
 	scalar c;
 	int i;
 
-	if (f->degree == 0) {
+	i = f->degree;
+	while ((c = (i * f->coeffs[i]) % prime) == 0 && i > 0) i--;
+
+	if (!i) {
 		resize_pol(g, 0);
 		g->degree = 0;
 		g->coeffs[0] = 0;
 		return;
 	}
 
-	i = f->degree;
-	while ((c = (i * f->coeffs[i]) % prime) == 0 && i > 1) i--;
-	g->degree = i-1;
+	g->degree = i - 1;
 	resize_pol(g, i-1);
 
 	i = 0;
@@ -423,7 +424,7 @@ int equal(polynomial g, polynomial f)
 #endif
 
 	if (f->degree != g->degree) return(0);
-	i=0;
+	i = 0;
 	while ((f->coeffs[i] == g->coeffs[i]) && (i <= f->degree)) i++;
 	if (i > f->degree) return(1);
 	return(0);
