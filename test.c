@@ -30,6 +30,7 @@
 #include "pol.h"
 #include "list_degrees.h"
 #include "xu_and_sparse.h"
+#include "utils.h"
 
 void test_scalars(void )
 {
@@ -289,21 +290,29 @@ void test_print_degrees()
 {
 	int i;
 	int *list;
-	polynomial A;
+	polynomial A, B;
 
 	make_pol(&A);
-	random_pol(A, 1000);
-	print_pol(A);
-	printf("\n");
-	printf("\n");
-	list = list_degrees_sq_x_free(A);
+	make_pol(&B);
+	random_pol(A, 5);
+	copy_pol(B, A);
 	i = 1;
-	printf("[");
-	while (i < list[0]) {
-		printf("%d, ", list[i]);
+	while (i < prime) {
+		pol_mult(B, B, A);
 		i++;
 	}
-	printf("%d]\n", list[i]);
+	A->degree = 4;
+	A->coeffs[0] = 0;
+	A->coeffs[1] = 0;
+	A->coeffs[2] = 0;
+	A->coeffs[3] = 0;
+	A->coeffs[4] = 1;
+	pol_mult(B, A, B);
+	print_pol(B);
+	printf("\n");
+	printf("\n");
+	list = list_degrees(B);
+	print_list(list);
 	printf("THE END.\n");
 }
 

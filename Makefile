@@ -1,10 +1,10 @@
 all:
-	gcc -pedantic -Wall -O3 -march=nocona -c main.c pol.c scalar.c xu_and_sparse.c
-	gcc -O3 -march=nocona -o tester main.o pol.o scalar.o xu_and_sparse.o
+	gcc -pedantic -Wall -O3 -march=nocona -c main.c utils.c pol.c scalar.c xu_and_sparse.c list_degrees.c
+	gcc -O3 -march=nocona -o tester main.o utils.o pol.o scalar.o xu_and_sparse.o list_degrees.c
 
 test:
-	gcc -g -Wall -pedantic -std=c99 -c list_degrees.c pol.c scalar.c test.c  xu_and_sparse.c
-	gcc -g -o tester list_degrees.o pol.o scalar.o test.o xu_and_sparse.o
+	gcc -g -Wall -pedantic -std=c99 -c utils.c list_degrees.c pol.c scalar.c test.c  xu_and_sparse.c
+	gcc -g -o tester utils.o list_degrees.o pol.o scalar.o test.o xu_and_sparse.o
 
 clean:
 	rm -f tester tijdelijk gmon.out

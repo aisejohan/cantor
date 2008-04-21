@@ -27,6 +27,7 @@
 #include "data.h"
 #include "scalar.h"
 #include "pol.h"
+#include "utils.h"
 
 /* Assumes g is reduced modulo f. */
 void prime_power(polynomial h, polynomial g, polynomial f)
@@ -134,7 +135,29 @@ void fast_prime_power_mod(polynomial h, int d, scalar *frobs)
 	free(tmp);
 }
 
-/* f has to be square free, prime to x and degree >= 2. */
+int *easy_case(polynomial f)
+{
+	int *list;
+
+	if (f->degree == 0) {
+		list = (int *)malloc(1*sizeof(int));
+		list[0] = 0;
+		return(list);
+	}	
+
+	if (f->degree == 1) {
+		list = (int *)malloc(2*sizeof(int));
+		list[0] = 1;
+		list[1] = 1;
+		return(list);
+	}
+
+	list = NULL;
+	return(list);
+}
+
+
+/* f has to be square free and prime to x. */
 int *list_degrees_sq_x_free(polynomial f)
 {
 	int a, d, e, i, nr;
@@ -145,6 +168,9 @@ int *list_degrees_sq_x_free(polynomial f)
 	polynomial tmp1;
 	polynomial tmp2;
 
+	list = easy_case(f);
+	if (list) return(list);
+
 	make_pol(&h);
 	h->degree = 1;
 	h->coeffs[1] = 1;
@@ -153,7 +179,7 @@ int *list_degrees_sq_x_free(polynomial f)
 	make_pol(&tmp1);
 	make_pol(&tmp2);
 
-	list = (int *) malloc(f->degree * sizeof(int));
+	list = (int *)malloc(f->degree*sizeof(int));
 
 	a = 0;
 	e = 1;
@@ -182,6 +208,124 @@ int *list_degrees_sq_x_free(polynomial f)
 		list[a] = f->degree;
 	}
 	list[0] = a;
+
+	free_pol(&h);
+	free_pol(&g);
+	free_pol(&tmp1);
+	free_pol(&tmp2);
+	free(frobs);
+
 	return(list);
 }
 
+int *list_degrees(polynomial f)
+{
+	int a, i, j;
+	int *t1, *t2;
+	int *list;
+	polynomial h;
+	polynomial g;
+	polynomial g1;
+	polynomial f1;
+	polynomial tmp1;
+	polynomial tmp2;
+
+	list = easy_case(f);
+	if (list) return(list);
+
+	make_pol(&h);
+
+	i = 0;
+	while (f->coeffs[i] == 0) i++;
+	if (i) {
+		t1 = malloc((i+1)*sizeof(int));
+		a = 0;
+		while (a < i) {
+			a++;
+			t1[a] = 1;
+		}
+		t1[0] = a;
+		h->degree = f->degree - i;
+		resize_pol(h, h->degree);
+		j = 0;
+		while (j <= h->degree) {
+			h->coeffs[j] = f->coeffs[j + i];
+			j++;
+		}
+		t2 = list_degrees(h);
+		list = merge(t1, t2);
+		free(t1);
+		free(t2);
+		free_pol(&h);
+		return(list);
+	}	
+
+	deriv(h, f);
+
+	/* The case where f is a pth power. */
+	if ((h->degree == 0) && ( h->coeffs[0] == 0)) {
+		h->degree = f->degree / prime;
+		resize_pol(h, h->degree);
+		i = 0;
+		while (i <= h->degree) {
+			h->coeffs[i] = f->coeffs[prime*i];
+			i++;
+		}
+		t1 = list_degrees(h);
+		list = (int *)malloc((1 + t1[0]*prime)*sizeof(int));
+		a = 0;
+		i = 1;
+		while (i <= t1[0]) {
+			j = 0;
+			while (j < prime) {
+				a++;
+				list[a] = t1[i];
+				j++;
+			}
+			i++;
+		}
+		list[0] = a;
+		free_pol(&h);
+		free(t1);
+		return(list);
+	}
+
+	make_pol(&g);
+	gcd(g, h, f);
+
+	if (g->degree > 0) {
+		make_pol(&tmp1);
+		make_pol(&tmp2);
+		make_pol(&g1);
+		make_pol(&f1);
+		qr_reduce(tmp1, f, tmp2, g);
+		gcd(g1, tmp2, g);
+		qr_reduce(tmp1, tmp2, f1, g1);
+		list = list_degrees_sq_x_free(f1);
+		t2 = list_degrees_sq_x_free(g1);
+		t1 = merge(t2, list);
+		free(list);
+		free(t2);
+		t2 = list_degrees(g);
+		list = merge(t1, t2);
+		free(t1);
+		free(t2);
+		free_pol(&h);
+		free_pol(&g);
+		free_pol(&tmp1);
+		free_pol(&tmp2);
+		free_pol(&g1);
+		free_pol(&f1);
+		return(list);
+	}
+
+	free_pol(&h);
+	free_pol(&g);
+	return(list_degrees_sq_x_free(f));
+}
+
+
+		
+		
+
+		
