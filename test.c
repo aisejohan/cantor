@@ -31,6 +31,7 @@
 #include "list_degrees.h"
 #include "xu_and_sparse.h"
 #include "utils.h"
+#include "emgcd.h"
 
 void test_scalars(void )
 {
@@ -374,6 +375,28 @@ void test_xu_to_sparse()
 	free_xu_pol(&A);
 }
 
+void test_emgcd()
+{
+	int i;
+	polynomial A[2];
+	polynomial *EMGCD;
+
+	make_pol(&A[0]);
+	make_pol(&A[1]);
+	random_pol(A[0], 10);
+	print_pol(A[0]);
+	random_pol(A[1], 8);
+	print_pol(A[1]);
+
+	EMGCD = do_emgcd(A);
+
+	i = 0;
+	while (i <= 5) {
+		print_pol(EMGCD[i]);
+		i++;
+	}
+}
+
 int main(void )
 {
 	change_prime(17);
@@ -385,6 +408,9 @@ int main(void )
 	test_deriv();
 	test_p_power();
 	test_print_degrees();
+
+	change_prime(5);
+	test_emgcd();
 
 /*	change_prime(61);
 	test_print_degrees();
