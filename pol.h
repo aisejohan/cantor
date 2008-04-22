@@ -35,6 +35,7 @@ void pol_add(polynomial h, polynomial g, polynomial f);
 void times_int(polynomial f, int i, polynomial g);
 void times_scalar(polynomial f, scalar a, int power, polynomial g);
 void pol_mult(polynomial h, polynomial g, polynomial f);
+void pol_square(polynomial h, polynomial f);
 void qr_reduce(polynomial r, polynomial g, polynomial q, polynomial f);
 void r_reduce(polynomial r, polynomial g, polynomial f);
 void gcd(polynomial g, polynomial f, polynomial h);

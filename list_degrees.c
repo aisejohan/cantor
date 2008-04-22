@@ -61,7 +61,6 @@ void prime_power(polynomial h, polynomial g, polynomial f)
 	free_pol(&tmp);
 }
 
-/* Can improve by introducing squaring function. */
 scalar *frobs_mod_f(polynomial f)
 {
 	int d, e, i;
@@ -253,7 +252,7 @@ int *list_degrees(polynomial f)
 			j++;
 		}
 		t2 = list_degrees(h);
-		list = merge(t1, t2);
+		list = merge(t1, t2, 1);
 		free(t1);
 		free(t2);
 		free_pol(&h);
@@ -291,7 +290,7 @@ int *list_degrees(polynomial f)
 	}
 
 	make_pol(&g);
-	gcd(g, h, f);
+/*	gcd(g, h, f); */
 
 	if (g->degree > 0) {
 		make_pol(&tmp1);
@@ -303,11 +302,11 @@ int *list_degrees(polynomial f)
 		qr_reduce(tmp1, tmp2, f1, g1);
 		list = list_degrees_sq_x_free(f1);
 		t2 = list_degrees_sq_x_free(g1);
-		t1 = merge(t2, list);
+		t1 = merge(t2, list, 1);
 		free(list);
 		free(t2);
 		t2 = list_degrees(g);
-		list = merge(t1, t2);
+		list = merge(t1, t2, 1);
 		free(t1);
 		free(t2);
 		free_pol(&h);
@@ -323,9 +322,3 @@ int *list_degrees(polynomial f)
 	free_pol(&g);
 	return(list_degrees_sq_x_free(f));
 }
-
-
-		
-		
-
-		

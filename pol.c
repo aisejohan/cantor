@@ -255,6 +255,35 @@ void pol_mult(polynomial h, polynomial g, polynomial f)
 	free(tmp);
 }
 
+void pol_square(polynomial h, polynomial f)
+{
+	int i,j;
+	unsigned int *tmp;
+
+	tmp = calloc(f->degree + f->degree + 1, sizeof(unsigned int));
+
+	i = 0;
+	while (i <= f->degree) {
+		j = 0;
+		while (j < i) {
+			tmp[i+j] += 2*sc_mul(f->coeffs[i], f->coeffs[j]);
+			j++;
+		}
+		tmp[2*i] += sc_mul(f->coeffs[i], f->coeffs[i]);
+		i++;
+	}
+
+	i = 2*f->degree;
+	while ((tmp[i] % prime) == 0 && i > 0) i--;
+	h->degree = i;
+	resize_pol(h, h->degree);
+	while (i >= 0) {
+		h->coeffs[i] = tmp[i] % prime;
+		i--;
+	}
+	free(tmp);
+}
+
 /* r = g + qf */
 void qr_reduce(polynomial r, polynomial g, polynomial q, polynomial f)
 {

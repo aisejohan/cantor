@@ -15,8 +15,8 @@ debug:
 	gcc -g -Wall -o tester main.o pol.o scalar.o xu_and_sparse.o
 
 profiler:
-	gcc -pg -O2 -Wall -march=nocona -c main.c pol.c scalar.c xu_and_sparse.c
-	gcc -pg -O2 -Wall -march=nocona -o tester main.o pol.o scalar.o xu_and_sparse.o
+	gcc -pg -O2 -Wall -march=nocona -c main.c utils.c list_degrees.c pol.c scalar.c xu_and_sparse.c
+	gcc -pg -O2 -Wall -march=nocona -o tester utils.c list_degrees.c main.o pol.o scalar.o xu_and_sparse.o
 
 gcov:
 	gcc -fprofile-arcs -ftest-coverage -Wall -march=nocona -c main.c pol.c scalar.c xu_and_sparse.c

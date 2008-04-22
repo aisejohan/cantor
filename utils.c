@@ -2,10 +2,15 @@
 #include <stdio.h>
 
 /* Merge two sorted lists of integers */
-int *merge(int *v, int *w)
+int *merge(int *v, int *w, int flag)
 {
 	int a,b,i,j,k;
 	int *u;
+
+	if ((flag != 0) && (flag != 1)) {
+		printf("Have to use flag=1 or 0 in merge function!\n");
+		exit(1);
+	}
 
 	a = v[0];
 	b = w[0];
@@ -17,13 +22,13 @@ int *merge(int *v, int *w)
 	k = 1;
 	while ((i <= a) && (j<= b)) {
 		if (v[i] < w[j]) {
-			if (u[k-1] <= v[i]) {
+			if (u[k-1] < v[i] + flag) {
 				u[k] = v[i];
 				k++;
 			}
 			i++;
 		} else {
-			if (u[k-1] <= w[j]) {
+			if (u[k-1] < w[j] + flag) {
 				u[k] = w[j];
 				k++;
 			}
@@ -31,14 +36,14 @@ int *merge(int *v, int *w)
 		}
 	}
 	while (i <= a) {
-		if (u[k-1] <= v[i]) {
+		if (u[k-1] < v[i] + flag) {
 			u[k] = v[i];
 			k++;
 		}
 		i++;
 	}
 	while (j <= b) {
-		if(u[k-1] <= w[j]) {
+		if(u[k-1] < w[j] + flag) {
 			u[k] = w[j];
 			k++;
 		}
