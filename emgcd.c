@@ -92,10 +92,6 @@ void split_polynomial(polynomial b, polynomial c, polynomial f, int k)
 		c->coeffs[i] = f->coeffs[i];
 		i--;
 	}
-printf("AAA\n");
-	test_pol(f);
-	test_pol(b);
-	test_pol(c);
 }
 
 /* Assumes that k >= 0.
@@ -103,10 +99,6 @@ printf("AAA\n");
 void put_back(polynomial f, polynomial b, polynomial c, int k)
 {
 	int i;
-	test_pol(f);
-	test_pol(b);
-	test_pol(c);
-printf("Here in put_back we have k = %d.\n", k);
 
 	if (b->degree == 0 && b->coeffs[0] == 0) {
 		copy_pol(f, c);
@@ -121,12 +113,10 @@ printf("Here in put_back we have k = %d.\n", k);
 		i++;
 	}
 	pol_add(f, f, c);
-printf("BBB\n");
-	test_pol(f);
-	test_pol(b);
-	test_pol(c);
 }
 
+int depth = 0;
+int steps = 0;
 
 /* Notation for the matrix ENGCD is:
  * 	emgcd[0]	emgcd[2]	emgcd[4]
@@ -144,14 +134,20 @@ polynomial *do_emgcd(polynomial *u)
 	polynomial c[2];
 	polynomial d[2];
 	polynomial *emgcd1, *emgcd2;
-printf("Here the u-degrees are %d, %d.\n", u[0]->degree, u[1]->degree);
+
+depth++;
+steps++;
+printf("Here the u-degrees are %d, %d, the depth is %d, and steps is %d.\n",
+u[0]->degree, u[1]->degree, depth, steps);
 
 	emgcd1 = easy_emgcd(u);
-	if (emgcd1) return(emgcd1);
+	if (emgcd1) {
+depth--;
+		return(emgcd1);
+	}
 
 	/* Note that m > 0. */
 	m = (u[0]->degree + 1)/2;
-printf("Here the integer m is %d.\n", m);
 
 	make_pol(&b[0]);
 	make_pol(&b[1]);
@@ -184,7 +180,6 @@ printf("Here the integer m is %d.\n", m);
 	pol_mult(t, emgcd1[5], c[1]);
 	pol_add(d[1], d[1], t);
 
-printf("HEEEEEEEEEREEEEEE.\n");
 	if (2*d[1]->degree < u[0]->degree) {
 		copy_pol(emgcd1[0], d[0]);
 		copy_pol(emgcd1[1], d[1]);
@@ -195,6 +190,7 @@ printf("HEEEEEEEEEREEEEEE.\n");
 		free_pol(&d[0]);
 		free_pol(&d[1]);
 		free_pol(&t);
+depth--;
 		return(emgcd1);
 	}
 
@@ -203,8 +199,6 @@ printf("HEEEEEEEEEREEEEEE.\n");
 	/* Note this q is the negative of the q from the paper. */
 	qr_reduce(t, d[0], q, d[1]);
 	k = 2*m - d[1]->degree;
-printf("Here the integer k is %d.\n", k);
-printf("Here the degree of q and t are %d, %d.\n", q->degree, t->degree);
 
 	if (t->degree < k) {
 		make_emgcd(&emgcd2);
@@ -294,6 +288,6 @@ printf("Here the degree of q and t are %d, %d.\n", q->degree, t->degree);
 	free_pol(&emgcd2[3]);
 	free_pol(&emgcd2[4]);
 	free_pol(&emgcd2[5]);
-printf("HEEEEEEEEEREEEEEE.\n");
+depth--;
 	return(emgcd1);
 }

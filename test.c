@@ -384,29 +384,26 @@ void test_emgcd()
 
 	make_pol(&A[0]);
 	make_pol(&A[1]);
-	random_pol(A[0], 1000);
+	random_pol(A[0], 10000);
 	print_pol(A[0]);
-	random_pol(A[1], 999);
+	random_pol(A[1], 9999);
 	print_pol(A[1]);
 
 	EMGCD = do_emgcd(A);
 
-	i = 0;
-	while (i <= 5) {
-		print_pol(EMGCD[i]);
-		i++;
-	}
 	make_pol(&B);
 	make_pol(&C);
 	pol_mult(B, EMGCD[2], A[0]);
 	pol_mult(C, EMGCD[4], A[1]);
-	times_int(C, 1, C);
 	pol_add(B, B, C);
+	times_int(B, -1, B);
+	pol_add(B, B, EMGCD[0]);
 	print_pol(B);
 	pol_mult(B, EMGCD[3], A[0]);
 	pol_mult(C, EMGCD[5], A[1]);
-	times_int(C, 1, C);
 	pol_add(B, B, C);
+	times_int(B, -1, B);
+	pol_add(B, B, EMGCD[1]);
 	print_pol(B);
 }
 
