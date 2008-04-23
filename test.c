@@ -378,14 +378,15 @@ void test_xu_to_sparse()
 void test_emgcd()
 {
 	int i;
+	polynomial B, C;
 	polynomial A[2];
 	polynomial *EMGCD;
 
 	make_pol(&A[0]);
 	make_pol(&A[1]);
-	random_pol(A[0], 10);
+	random_pol(A[0], 1000);
 	print_pol(A[0]);
-	random_pol(A[1], 8);
+	random_pol(A[1], 999);
 	print_pol(A[1]);
 
 	EMGCD = do_emgcd(A);
@@ -395,6 +396,18 @@ void test_emgcd()
 		print_pol(EMGCD[i]);
 		i++;
 	}
+	make_pol(&B);
+	make_pol(&C);
+	pol_mult(B, EMGCD[2], A[0]);
+	pol_mult(C, EMGCD[4], A[1]);
+	times_int(C, 1, C);
+	pol_add(B, B, C);
+	print_pol(B);
+	pol_mult(B, EMGCD[3], A[0]);
+	pol_mult(C, EMGCD[5], A[1]);
+	times_int(C, 1, C);
+	pol_add(B, B, C);
+	print_pol(B);
 }
 
 int main(void )

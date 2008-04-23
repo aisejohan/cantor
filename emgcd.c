@@ -108,6 +108,10 @@ void put_back(polynomial f, polynomial b, polynomial c, int k)
 	test_pol(c);
 printf("Here in put_back we have k = %d.\n", k);
 
+	if (b->degree == 0 && b->coeffs[0] == 0) {
+		copy_pol(f, c);
+		return;
+	}
 	f->degree = b->degree + k;
 	resize_pol(f, f->degree);
 	memset(f->coeffs, 0, (f->degree + 1)*sizeof(scalar));
@@ -146,7 +150,7 @@ printf("Here the u-degrees are %d, %d.\n", u[0]->degree, u[1]->degree);
 	if (emgcd1) return(emgcd1);
 
 	/* Note that m > 0. */
-	m = (u[0]->degree + 1)/2; 
+	m = (u[0]->degree + 1)/2;
 printf("Here the integer m is %d.\n", m);
 
 	make_pol(&b[0]);
@@ -198,16 +202,21 @@ printf("HEEEEEEEEEREEEEEE.\n");
 
 	/* Note this q is the negative of the q from the paper. */
 	qr_reduce(t, d[0], q, d[1]);
-	k = 2*m - (int) d[1]->degree;
+	k = 2*m - d[1]->degree;
 printf("Here the integer k is %d.\n", k);
 printf("Here the degree of q and t are %d, %d.\n", q->degree, t->degree);
 
 	if (t->degree < k) {
 		make_emgcd(&emgcd2);
-		copy_pol(c[0], d[0]);
-		copy_pol(c[1], t);
 		emgcd2[2]->coeffs[0] = 1;
 		emgcd2[5]->coeffs[0] = 1;
+		if (d[1]->degree < k) {
+			copy_pol(c[0], d[1]);
+		} else {
+			split_polynomial(b[0], c[0], d[1], k);
+			copy_pol(emgcd2[0], b[0]);
+		}
+		copy_pol(c[1], t);
 	} else {
 		split_polynomial(b[0], c[0], d[1], k);
 		split_polynomial(b[1], c[1], t, k);
