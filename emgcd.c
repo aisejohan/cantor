@@ -115,9 +115,6 @@ void put_back(polynomial f, polynomial b, polynomial c, int k)
 	pol_add(f, f, c);
 }
 
-int depth = 0;
-int steps = 0;
-
 /* Notation for the matrix ENGCD is:
  * 	emgcd[0]	emgcd[2]	emgcd[4]
  * 	emgcd[1]	emgcd[3]	emgcd[5]
@@ -135,14 +132,9 @@ polynomial *do_emgcd(polynomial *u)
 	polynomial d[2];
 	polynomial *emgcd1, *emgcd2;
 
-depth++;
-steps++;
-printf("Here the u-degrees are %d, %d, the depth is %d, and steps is %d.\n",
-u[0]->degree, u[1]->degree, depth, steps);
 
 	emgcd1 = easy_emgcd(u);
 	if (emgcd1) {
-depth--;
 		return(emgcd1);
 	}
 
@@ -190,7 +182,6 @@ depth--;
 		free_pol(&d[0]);
 		free_pol(&d[1]);
 		free_pol(&t);
-depth--;
 		return(emgcd1);
 	}
 
@@ -288,6 +279,31 @@ depth--;
 	free_pol(&emgcd2[3]);
 	free_pol(&emgcd2[4]);
 	free_pol(&emgcd2[5]);
-depth--;
 	return(emgcd1);
 }
+
+void variant_gcd(polynomial g, polynomial h, polynomial f)
+{
+	polynomial a[2];
+	polynomial *emgcd;
+
+	make_pol(&a[0]);
+	make_pol(&a[1]);
+	copy_pol(a[0], h);
+	copy_pol(a[1], f);
+
+	do {
+		r_reduce(a[1], a[1], a[0]);
+		emgcd = do_emgcd(a);
+		free_pol(&a[1]);
+		a[1] = emgcd[0];
+		a[0] = emgcd[1];
+		free_pol(&emgcd[2]);
+		free_pol(&emgcd[3]);
+		free_pol(&emgcd[4]);
+		free_pol(&emgcd[5]);
+	} while (a[0]->degree > 0 || a[0]->coeffs[0] != 0);
+
+	copy_pol(g, a[1]);
+}
+

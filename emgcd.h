@@ -22,3 +22,4 @@
  *									*/
 
 polynomial *do_emgcd(polynomial *u);
+void variant_gcd(polynomial g, polynomial h, polynomial f);

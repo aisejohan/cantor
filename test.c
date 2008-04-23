@@ -31,7 +31,6 @@
 #include "list_degrees.h"
 #include "xu_and_sparse.h"
 #include "utils.h"
-#include "emgcd.h"
 
 void test_scalars(void )
 {
@@ -168,8 +167,8 @@ void test_gcd()
 	make_pol(&D);
 	make_pol(&g);
 
-	random_pol(A, 20);
-	random_pol(B, 20);
+	random_pol(A, 400);
+	random_pol(B, 400);
 	random_pol(C, 20);
 
 	gcd(D, A, B);
@@ -375,41 +374,9 @@ void test_xu_to_sparse()
 	free_xu_pol(&A);
 }
 
-void test_emgcd()
-{
-	int i;
-	polynomial B, C;
-	polynomial A[2];
-	polynomial *EMGCD;
-
-	make_pol(&A[0]);
-	make_pol(&A[1]);
-	random_pol(A[0], 10000);
-	print_pol(A[0]);
-	random_pol(A[1], 9999);
-	print_pol(A[1]);
-
-	EMGCD = do_emgcd(A);
-
-	make_pol(&B);
-	make_pol(&C);
-	pol_mult(B, EMGCD[2], A[0]);
-	pol_mult(C, EMGCD[4], A[1]);
-	pol_add(B, B, C);
-	times_int(B, -1, B);
-	pol_add(B, B, EMGCD[0]);
-	print_pol(B);
-	pol_mult(B, EMGCD[3], A[0]);
-	pol_mult(C, EMGCD[5], A[1]);
-	pol_add(B, B, C);
-	times_int(B, -1, B);
-	pol_add(B, B, EMGCD[1]);
-	print_pol(B);
-}
-
 int main(void )
 {
-	change_prime(17);
+/*	change_prime(17);
 	test_scalars();
 	test_distributive_law();
 	test_associative_law();
@@ -418,9 +385,10 @@ int main(void )
 	test_deriv();
 	test_p_power();
 	test_print_degrees();
+*/
 
 	change_prime(5);
-	test_emgcd();
+	test_gcd();
 
 /*	change_prime(61);
 	test_print_degrees();
