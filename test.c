@@ -374,6 +374,26 @@ void test_xu_to_sparse()
 	free_xu_pol(&A);
 }
 
+void loop()
+{
+	int i;
+	int *list;
+	polynomial A, B, C;
+
+	make_pol(&A);
+	make_pol(&B);
+	make_pol(&C);
+
+	i = 0;
+	while (i <= 100000) {
+		random_pol(A, 50);
+		list = list_degrees(A);
+		print_list(list);
+		free(list);
+		i++;
+	}
+}
+
 int main(void )
 {
 /*	change_prime(17);
@@ -388,7 +408,7 @@ int main(void )
 */
 
 	change_prime(5);
-	test_gcd();
+	loop();
 
 /*	change_prime(61);
 	test_print_degrees();

@@ -3,8 +3,8 @@ all:
 	gcc -O3 -march=nocona -o tester main.o utils.o pol.o scalar.o xu_and_sparse.o list_degrees.c
 
 test:
-	gcc -DKIJKEN -g -Wall -pedantic -std=c99 -c emgcd.c utils.c list_degrees.c pol.c scalar.c test.c  xu_and_sparse.c
-	gcc -DKIJKEN -g -o tester emgcd.o utils.o list_degrees.o pol.o scalar.o test.o xu_and_sparse.o
+	gcc -pg -O2 -Wall -pedantic -std=c99 -c utils.c list_degrees.c pol.c scalar.c test.c  xu_and_sparse.c
+	gcc -pg -O2 -o tester utils.o list_degrees.o pol.o scalar.o test.o xu_and_sparse.o
 
 clean:
 	rm -f tester tijdelijk gmon.out
