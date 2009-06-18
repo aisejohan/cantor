@@ -186,6 +186,15 @@ int *list_degrees_sq_x_free(polynomial f)
 	frobs = frobs_mod_f(f);
 	while (f->degree >= 2*e) {
 		fast_prime_power_mod(h, d, frobs);
+		if ((h->degree == 1) && (h->coeffs[1] == 1) &&
+						(h->coeffs[0] == 0)) {
+			while (f->degree > 0) {
+				a++;
+				list[a] = e;
+				f->degree = f->degree - e;
+			}
+			goto out;
+		}
 		h->coeffs[1] = (h->coeffs[1] + prime - 1) % prime;
 		gcd(g, h, f);
 		h->coeffs[1] = (h->coeffs[1] + 1) % prime;
@@ -206,6 +215,7 @@ int *list_degrees_sq_x_free(polynomial f)
 		a++;
 		list[a] = f->degree;
 	}
+out:
 	list[0] = a;
 
 	free_pol(&h);
@@ -290,7 +300,7 @@ int *list_degrees(polynomial f)
 	}
 
 	make_pol(&g);
-/*	gcd(g, h, f); */
+	gcd(g, h, f);
 
 	if (g->degree > 0) {
 		make_pol(&tmp1);

@@ -65,6 +65,7 @@ void change_prime(int p)
 		neg_invs[i] = j;
 		i++;
 	}
+	neg_invs[0] = -1;
 	i = 0;
 	while (i < p) {
 		j = 0;

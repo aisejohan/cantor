@@ -42,17 +42,18 @@ int main()
 	polynomial B;
 
 	make_pol(&B);
-	random_xu(&A, 4, 5);
+	set_seed(0);
+	random_xu(&A, 3, 3);
 	printf("f = ");
 	print_xu_pol(A);
 
 	i = 0;
-	while (i <= 40) {
+	while (i <= 99) {
 		change_prime(primes[i]);
 		nr = xu_to_sparse(&sB, A);
 		if (nr) {
 			sparse_to_pol(B, sB);
-			printf("A[%d] = ", i + 1);
+			printf("p = %d: ", primes[i]);
 /*			printf("[");
 			print_degrees_sparse(B, sB);
 			printf("];\n");

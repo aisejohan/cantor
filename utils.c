@@ -1,5 +1,37 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <stddef.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <unistd.h>
+
+
+
+void set_seed(unsigned int zaadje)
+{
+        int fd, uit;
+        unsigned int willekeurig;
+        if (zaadje) {
+                srand(zaadje);
+                return;
+        }
+        fd = open("/dev/urandom", O_RDONLY);
+        if (fd < 0) {
+                printf("Unable to open /dev/urandom. So seed=666.\n");
+                willekeurig = 666;
+        } else {
+                uit = read(fd, &willekeurig, sizeof(willekeurig));
+                if (uit <= 0) {
+                        printf("Failure reading /dev/urandom. So Seed=666.\n");
+                        willekeurig = 666;
+                }
+        }
+        srand(willekeurig);
+        uit = close(fd);
+        return;
+}
 
 /* Merge two sorted lists of integers */
 int *merge(int *v, int *w, int flag)
